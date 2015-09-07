@@ -6,7 +6,4 @@ f = open('rsclist_rc.py', 'w')
 f.write(check_output(['pyrcc5', 'rsclist.qrc']).decode())
 f.close()
 
-from distutils.core import setup
-import py2exe
-
-setup(console=['baka-mplayer.py'])
+print(check_output(['pyinstaller', '-F', '-i', 'img/logo.ico', 'mochi-player.py']).decode())

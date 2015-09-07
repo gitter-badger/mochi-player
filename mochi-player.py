@@ -1,11 +1,11 @@
 import sys
 
 from PyQt5.Qt import QApplication
+from ui.mainwindow import MainWindow
 
 if __name__ == '__main__':
   app = QApplication(sys.argv)
 
-  from ui.mainwindow import MainWindow
   window = MainWindow()
   window.show()
 
