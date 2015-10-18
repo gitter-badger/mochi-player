@@ -1,2 +1,3 @@
-# mochi-player
+﻿# mochi-player
+
 The mpv based media player

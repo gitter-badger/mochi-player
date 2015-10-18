@@ -1,0 +1,52 @@
+# Maintainer: u8sand <u8sand@gmail.com>
+
+_pkgname=mochi-player
+pkgname=${_pkgname}-git
+pkgver=1.0.0
+pkgrel=1
+pkgdesc='A free and open source, cross-platform, libmpv based multimedia player. Qt5 build. Development version.'
+arch=('i686' 'x86_64')
+url='http://mochi-player.github.io/'
+license=('GPL')
+
+depends=('mpv' 'python-pyqt5' 'qt5-svg')
+optdepends=(
+	'mpv-git: for bleeding-edge mpv features'
+	'qt5-translations: for Qt5 dialog translations'
+	'youtube-dl: for remote video streaming'
+)
+makedepends=('git' 'qt5-tools')
+provides=("${_pkgname}=${pkgver}")
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+
+source=(
+	"${_pkgname}::git+https://github.com/mochi-player/mochi-player.git"
+)
+sha512sums=(
+	"SKIP"
+)
+
+pkgver() {
+	# Updating package version
+	cd ${srcdir}/${_pkgname}
+	(
+		set -o pipefail
+		git describe --long --tags | sed -r 's/^v//;s/([^-]*-g)/r\1/;s/-/./g' ||
+		printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+	)
+}
+
+prepare() {
+	# Make build directory
+	mkdir ${srcdir}/build
+}
+
+build() {	
+	# Building package
+}
+
+package() {
+	# Installing package
+	cd ${srcdir}/build
+}

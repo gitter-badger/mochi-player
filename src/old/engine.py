@@ -1,8 +1,40 @@
 from mpv import MPV
 from PyQt5.Qt import QApplication, qApp
 from ui.aboutdialog import AboutDialog
+from ui.mainwindow import MainWindow
+
+class Mpv(MPV):
+  control = Controller([
+    'file',
+    'media-title',
+    'path',
+    'volume',
+    'screenshot-format',
+    'screenshot-template',
+    'screenshot-directory',
+  ])
+
+  def __init__(self, engine):
+    super().__init__(window_id=engine.window.ui.MpvFrame)
+    control.register(self)
+
+  def on_event(self, event):
+    self.control(self, event.key, event.val)
 
 class Engine:
+
+  
+
+  def __init__(self, argv):
+    super().__init__(argv)
+    self.window = MainWindow(self)
+    self.mpv = Mpv(self)
+
+  def exec_():
+    load()
+    super().exec_()
+    save()
+
   commands = {}
   data = {}
 

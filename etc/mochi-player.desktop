@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Mochi-Player
+GenericName=Media player
+Comment=Mochi Player is a free and open source, cross-platform, **libmpv** based multimedia player.
+Icon=mochi-player
+Exec=mochi-player %u
+Terminal=false
+Categories=AudioVideo;Video;
