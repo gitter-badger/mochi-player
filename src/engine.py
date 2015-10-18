@@ -11,6 +11,8 @@ from player import Player
 from input import Input
 from overlay import Overlay
 from translator import Translator
+from remote import Remote
+from update import Update
 
 class Engine(QApplication, Data):
   def __init__(self, argv):
@@ -21,6 +23,7 @@ class Engine(QApplication, Data):
     QApplication.__init__(self, argv)
     config = Config(argv)
 
+    # initialize everything
     self.window = MainWindow()
     self.player = Player()
     self.input = Input()
@@ -29,4 +32,10 @@ class Engine(QApplication, Data):
     self.remote = Remote()
     self.update = Update()
 
+    # connect everything
+    self.player.attach(self.window.ui.MpvFrame.winId())
+    self.translator.register_translate_callback(window.retranslate)
+    # todo
+
+    # load settings
     Data.__init__(self, config)

@@ -1,32 +1,24 @@
 import sys, copy
 
-from PyQt5.QtWidgets import QMainWindow
 from PyQt5.Qt import QTextCursor
+from PyQt5.QtWidgets import QMainWindow
 from .moc.mainwindow import Ui_MainWindow
 
 from .aboutdialog import AboutDialog
 
-from engine import mochi
-from config import Config
-from data import Data
-from mpvhandler import Mpv
-from recent import Recent
-from remote import Remote
-from input import Input
-from update import Update
+from engine import Engine
 
 class MainWindow(QMainWindow):
   ui = Ui_MainWindow()
 
-  mpv = Mpv()
-  recent = Recent()
-  remote = Remote()
-  input = Input()
-  update = Update()
+  def retranslate(self):
+    self.ui.retranslateUi(self)
+    # todo: repopulate necessary strings
 
   def __init__(self):
-    super(QMainWindow, self).__init__()
+    super().__init__()
     self.ui.setupUi(self)
+
     if sys.platform == 'linux' or sys.platform == 'unix':
       self.ui.actionUpdate_Streaming_Support.setEnabled(False)
     self.addActions(self.ui.menubar.actions())
