@@ -3,6 +3,8 @@ Engine is the main controller of the player. It initalizes everything
   and facilitates communication between the models and views.
 """
 
+import json, copy
+
 from PyQt5.Qt import QApplication
 from data import Data
 from config import Config
@@ -14,7 +16,7 @@ from translator import Translator
 from remote import Remote
 from update import Update
 
-class Engine(QApplication):
+class Engine(QApplication, Data):
   def __init__(self, argv):
     """
     Creates all components
@@ -32,10 +34,32 @@ class Engine(QApplication):
     self.remote = Remote()
     self.update = Update()
 
+    Data.__init__(self)
+
     # connect everything
     self.player.attach(self.window.ui.MpvFrame.winId())
     self.translator.register_translate_callback(window.retranslate)
     # todo
 
-    # load settings
-    self.data = Data(self.__dict__)
+  # todo: make sure these work
+  def load(self, file):
+    try:
+      f = open(file, 'r')
+      super(Data, self).update(json.load(f))
+      f.close()
+    except:
+      return False
+    return True
+
+  def save(self, file):
+    try:
+      f = open(file, 'w')
+      d = copy.deepcopy(dict(self))
+      for k, v in self.__default__.items():
+        if d[k] == v:
+          d.pop(k)
+      json.dump(d, f, indent=4, sort_keys=True)
+      f.close()
+    except:
+      return False
+    return True

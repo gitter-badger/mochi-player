@@ -4,13 +4,16 @@ Translator allows us to translate text throughout the application
 """
 
 from PyQt5.Qt import QTranslator, QLibraryInfo, QLocale, qApp
+from data import Data
 
-class Translator:
+class Translator(Data):
   translate_callback = []
 
   def __init__(self, lang):
     self.lang, self.qt, self.app = None, None, None
     self.translate(lang)
+
+    Data.__init__(self)
 
   def register_translate_callback(self, callback):
     """

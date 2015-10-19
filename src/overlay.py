@@ -10,15 +10,19 @@ from PyQt5.Qt import QThread, QTimer, \
   QFontMetrics, QFont, \
   QFileInfo, QLabel
 
+from data import Data
 from config import Config
 
-class Overlay:
+class Overlay(Data):
   _min_overlay, _max_overlay = 1, 60
   _info_overlay, _status_overlay = 62, 63
   _refresh_rate = 1000
   _fm_correction = 1.3
 
   def __init__(self):
+    # todo
+    Data.__init__(self)
+
     self._overlay = self._min_overlay
     self._overlays = {}
     self._timer = None

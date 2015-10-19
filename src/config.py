@@ -3,7 +3,9 @@ Config has certain globals that are used throughout the program
   that may be changed with command-line arguments.
 """
 
-class Config:
+from data import Data
+
+class Config(Data):
   Version = '2.1.0'
   SettingsFile = 'mochi-player.ini'
   LanguagePath = ':/translations/'
@@ -15,4 +17,5 @@ class Config:
 
   # todo: allow config changes through command-line
   def __init__(self, argv):
-    pass
+    # todo
+    Data.__init__(self)
