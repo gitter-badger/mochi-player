@@ -4,9 +4,6 @@
 mochi-player - a mpv based media player
 """
 
-import sys
-from engine import Engine
-
 if __name__ == '__setup__':
   # compile qt ui
   from PyQt5.uic import compileUiDir
@@ -20,5 +17,10 @@ if __name__ == '__setup__':
   print(check_output(['pyinstaller', '-F', '-i', 'img/logo.ico', 'mochi-player.py']).decode())
 
 if __name__ == '__main__':
+  import sys
+  from PyQt5.Qt import QApplication
+  from engine import Engine
+  
+  app = QApplication(sys.argv)
   engine = Engine(sys.argv)
-  sys.exit(engine.exec_())
+  sys.exit(app.exec_())

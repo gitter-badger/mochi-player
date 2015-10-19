@@ -5,8 +5,6 @@ Engine is the main controller of the player. It initalizes everything
 
 import json, copy
 
-from PyQt5.Qt import QApplication
-from data import Data
 from config import Config
 from ui.mainwindow import MainWindow
 from player import Player
@@ -16,15 +14,12 @@ from translator import Translator
 from remote import Remote
 from update import Update
 
-class Engine(QApplication, Data):
+class Engine:
   def __init__(self, argv):
     """
     Creates all components
       argv: command-line arguments
     """
-    QApplication.__init__(self, argv)
-    config = Config(argv)
-
     # initialize everything
     self.window = MainWindow()
     self.player = Player()
@@ -34,18 +29,24 @@ class Engine(QApplication, Data):
     self.remote = Remote()
     self.update = Update()
 
-    Data.__init__(self)
+    # create a data tree of all modules' members for easy load/save
+    self.data = {k: v.__dict__ for k, v in self.__dict__.items() }
 
     # connect everything
     self.player.attach(self.window.ui.MpvFrame.winId())
     self.translator.register_translate_callback(window.retranslate)
     # todo
 
+    self.load(Config.SettingsFile)
+
+  def __del__(self):
+    self.save(Config.SettingsFile)
+
   # todo: make sure these work
   def load(self, file):
     try:
       f = open(file, 'r')
-      super(Data, self).update(json.load(f))
+      self.data.update(json.load(f))
       f.close()
     except:
       return False
@@ -54,11 +55,11 @@ class Engine(QApplication, Data):
   def save(self, file):
     try:
       f = open(file, 'w')
-      d = copy.deepcopy(dict(self))
-      for k, v in self.__default__.items():
+      d = copy.deepcopy(dict(self.data))
+      for k, v in self.data.items():
         if d[k] == v:
           d.pop(k)
-      json.dump(d, f, indent=4, sort_keys=True)
+      json.dump(d, f, indent=2, sort_keys=True)
       f.close()
     except:
       return False

@@ -8,13 +8,14 @@ from .moc.mainwindow import Ui_MainWindow
 from .aboutdialog import AboutDialog
 
 from data import Data
+
 class OnTop(Enum):
   Never=0
   Always=1
   Playing=2
 
 class MainWindow(QMainWindow):
-  ui = Ui_MainWindow()
+z  ui = Ui_MainWindow()
 
   def retranslate(self):
     self.ui.retranslateUi(self)
