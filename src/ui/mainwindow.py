@@ -1,4 +1,5 @@
 import sys, copy
+from enum import Enum
 
 from PyQt5.Qt import QTextCursor
 from PyQt5.QtWidgets import QMainWindow
@@ -6,14 +7,18 @@ from .moc.mainwindow import Ui_MainWindow
 
 from .aboutdialog import AboutDialog
 
-from engine import Engine
+from data import Data
+class OnTop(Enum):
+  Never=0
+  Always=1
+  Playing=2
 
 class MainWindow(QMainWindow):
   ui = Ui_MainWindow()
 
   def retranslate(self):
     self.ui.retranslateUi(self)
-    # todo: repopulate necessary strings
+    self.data.refresh(self)
 
   def __init__(self):
     super().__init__()
@@ -25,67 +30,41 @@ class MainWindow(QMainWindow):
     self.ui.mpvFrame.installEventFilter(self)
     # todo autohide
 
-    self.data = Data({
-      'autoFit': 100,
-      'debug': False,
-      'gestures': True,
-      'hidePopup': False,
-      'lang': 'auto',
-      'onTop': 'never',
-      'remaining': True,
-      'resume': True,
-      'screenshotDialog': True,
-      'showAll': True,
-      'splitter': 254,
-      'trayIcon': False,
-      'version': Config.Version,
-      'mpv': self.mpv.data,
-      'recent': self.recent.data,
-      'remote': self.remote.data,
-      'input': self.input.data,
-      'update': self.update.data,
-    })
+    # define data we're interested in (gets populated by engine)
+    self.window = dict(
+      autoFit=(100, # default val
+        lambda b: self.ui.action_To_Current_Size.setChecked(b), # onChange
+        self.ui.action_To_Current_Size.triggered.connect), # triggerChange
+      fullscreen=False,
+      dim=False,
+      onTop=OnTop.Never,
+      remaining=True,
+      hidePopup=False,
+      screenshotDialog=True,
+      showAll=True,
+      splitter=254,
+      trayIcon=False)
+    self.player = dict(
+      chapter=0,
+      sub_scale=1,
+      video_aspect=None,
+      sub_visiblity=True,
+      time=0,
+      deinterlace=False,
+      interpolate=False,
+      mute=False,
+      file=str(),
+      playlist=[],
+      paused=False,
+      volume=100,
+      speed=1.0,
+      resume=True)
+    self.overlay = dict(
+      media_info=False)
+    self.gestures = dict(
+      type=None)
 
-    self.data.bind({
-      'lang': self.ChangeLanguage,
-      'onTop': lambda t: \
-        Util.SetAlwaysOnTop(self.winId(), \
-          (t == "never" and False) or \
-          (t == "always" and True) or \
-          (t == "playing" and self.mpv.state == PlayState.Playing) or
-          False),
-      'remaining': lambda: self.data.update(self.mpv.data.time),
-    })
-    self.mpv.data.bind({
-      'state': self.ChangeState,
-    })
-    self.MapCommandActions()
-
-  def Load(self, file=None):
-    self.data.load(Config.SettingsFile)
-    self.data['mpv']['file'] = file
-
-  def Save(self):
-      self.data.save(Config.SettingsFile)
-
-  def ChangeState(self, state):
-    ''' Change the mpv state, update interface accordingly '''
-
-
-  def ChangeLanguage(self, lang):
-    if lang == 'auto':
-      lang = QLocale.system().name()
-    if lang != 'en':
-      self.translators = (QTranslator(), QTranslator())
-      self.translators[0].load('qt_%s' % (lang), QLibraryInfo.location(QLibraryInfo.TranslationsPath))
-      self.translators[1].load('mochi-mplayer_%s' % (lang), Config.LanguagePath)
-      qApp.installTranslator(self.translators[0])
-      qApp.installTranslator(self.translators[1])
-    else:
-      qApp.removeTranslator(self.translators[0])
-      qApp.removeTranslator(self.translators[1])
-    ui.retranslateUi(self)
-    self.data.Refresh()
+    self.data = Data(self.__dict__)
 
   def MapCommandActions(self):
     commandAction = {
@@ -149,7 +128,3 @@ class MainWindow(QMainWindow):
     }
     for cmd, act in commandAction.items():
       act.triggered.connect(lambda: self.command(copy.copy(cmd)))
-
-  def command(self, cmd):
-    self.ui.outputTextEdit.moveCursor(QTextCursor.End)
-    self.ui.outputTextEdit.insertPlainText('[mochi]: %d\n' % (mochi.command(cmd)))

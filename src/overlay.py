@@ -3,11 +3,11 @@ Overlay provides a way of overlaying data onto the video canvas for
   status messages or other purposes.
 """
 
-from PyQt5 import QThread, QTimer
-  QImage, QPoint, QColor,
-  QPainter, QPainterPath,
-  QPen, QBrush,
-  QFontMetrics, QFont,
+from PyQt5.Qt import QThread, QTimer, \
+  QImage, QPoint, QColor, \
+  QPainter, QPainterPath, \
+  QPen, QBrush, \
+  QFontMetrics, QFont, \
   QFileInfo, QLabel
 
 from config import Config
@@ -67,7 +67,7 @@ class Overlay:
     """
     if id == -1:
       id = (self._overlay % self._max_overlay) + self._min_overlay
-    
+
     fm = QFontMetrics(font)
     lines = text.split('\n')
     h = fm.height() * lines.length()
@@ -75,7 +75,7 @@ class Overlay:
     xF = (self.mpvFrameWidth - 2 * pos.x()) / (self._fm_correction * w)
     yF = (self.mpvFrameHeight - 2 * pos.y()) / h
     font.setPointSizeF(min(font.pointSizeF() * min(xF, yF), font.pointSizeF()))
-    
+
     fm = QFontMetrics(font)
     h, w = fm.height(), 0
     path = QPainterPath(QPoint(0, 0))
@@ -97,7 +97,7 @@ class Overlay:
     painter.drawPath(path)
 
     self.mpv.add_overlay(
-      id == -1 ? self._overlay : id,
+      self._overlay if id == -1 else id,
       pos.x(), pos.y(),
       '&%d' % (quintptr(canvas.bits())),
       0, canvas.width(), canvas.height())

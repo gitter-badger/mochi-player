@@ -14,7 +14,7 @@ from translator import Translator
 from remote import Remote
 from update import Update
 
-class Engine(QApplication, Data):
+class Engine(QApplication):
   def __init__(self, argv):
     """
     Creates all components
@@ -38,4 +38,4 @@ class Engine(QApplication, Data):
     # todo
 
     # load settings
-    Data.__init__(self, config)
+    self.data = Data(self.__dict__)
