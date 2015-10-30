@@ -16,3 +16,10 @@ class Player(MPV):
     Attach the mpv engine to the window control.
     """
     self.window_id = win
+
+  def stop(self):
+    """
+    Stop playback.
+    """
+    self.time_pos = self.time_start
+    self.pause = True

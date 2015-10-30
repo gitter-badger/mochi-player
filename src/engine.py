@@ -3,13 +3,15 @@ Engine is the main controller of the player. It initalizes everything
   and facilitates communication between the models and views.
 """
 
-import json, copy
+import json, copy, locale
 
+from PyQt5.Qt import QApplication
 from config import Config
 from ui.mainwindow import MainWindow
 from player import Player
 from input import Input
 from overlay import Overlay
+from playlist import Playlist
 from translator import Translator
 from remote import Remote
 from update import Update
@@ -21,28 +23,50 @@ class Engine:
       argv: command-line arguments
     """
     # initialize everything
+    qt = QApplication(argv)
+    locale.setlocale(locale.LC_NUMERIC, 'C') # reset locale to C for mpv
+
     self.window = MainWindow()
     self.player = Player()
     self.input = Input()
     self.overlay = Overlay()
-    self.translator = Translator()
+    self.playlist = Playlist()
     self.remote = Remote()
     self.update = Update()
+    self.translator = Translator()
 
     # create a data tree of all modules' members for easy load/save
     self.data = {k: v.__dict__ for k, v in self.__dict__.items() }
 
-    # connect everything
-    self.player.attach(self.window.ui.MpvFrame.winId())
-    self.translator.register_translate_callback(window.retranslate)
-    # todo
+    # volatile initialization
+    self.config = Config(argv)
+    self.qt = qt
+    self.engine = self
 
-    self.load(Config.SettingsFile)
+    # connect everything
+    # window
+    self.window.config = self.config
+    self.window.input = self.input
+    self.window.playlist = self.playlist
+    self.window.exec_scope = {k: v for k, v in self.__dict__.items() }
+    # player
+    self.player.attach(self.window.ui.mpvFrame.winId())
+    # input
+    # overlay
+    self.overlay.config = self.config
+    # playlist
+    self.playlist.player = self.player
+    # translator
+    self.translator.register_translate_callback(self.window.retranslate)
+
+    self.load(self.config.settingsFile)
 
   def __del__(self):
-    self.save(Config.SettingsFile)
+    self.save(self.config.settingsFile)
 
-  # todo: make sure these work
+  def exec_(self):
+    return self.qt.exec_()
+
   def load(self, file):
     try:
       f = open(file, 'r')
@@ -64,3 +88,9 @@ class Engine:
     except:
       return False
     return True
+
+  def new(self):
+    """
+    Create new instance of application.
+    """
+    pass

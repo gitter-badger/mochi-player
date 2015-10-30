@@ -8,16 +8,15 @@ from PyQt5.Qt import QTranslator, QLibraryInfo, QLocale, qApp
 class Translator:
   translate_callback = []
 
-  def __init__(self, lang):
+  def __init__(self):
     self.lang, self.qt, self.app = None, None, None
-    self.translate(lang)
 
   def register_translate_callback(self, callback):
     """
     Components that need to reload strings should register callbacks
       via this function to be called after translation.
     """
-    translate_callback.append(callback)
+    self.translate_callback.append(callback)
 
   def translate(self, lang):
     if self.lang == lang:

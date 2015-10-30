@@ -18,9 +18,6 @@ if __name__ == '__setup__':
 
 if __name__ == '__main__':
   import sys
-  from PyQt5.Qt import QApplication
   from engine import Engine
-  
-  app = QApplication(sys.argv)
   engine = Engine(sys.argv)
-  sys.exit(app.exec_())
+  sys.exit(engine.exec_())

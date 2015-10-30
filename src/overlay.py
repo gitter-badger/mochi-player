@@ -10,9 +10,6 @@ from PyQt5.Qt import QThread, QTimer, \
   QFontMetrics, QFont, \
   QFileInfo, QLabel
 
-from data import Data
-from config import Config
-
 class Overlay:
   _min_overlay, _max_overlay = 1, 60
   _info_overlay, _status_overlay = 62, 63
@@ -31,7 +28,7 @@ class Overlay:
     if text != str() and duration != 0:
       self.showText(
         text,
-        QFont(Config.MonospaceFont, 14, QFont.Bold),
+        QFont(self.config.MonospaceFont, 14, QFont.Bold),
         QColor(0xffffff),
         QPoint(20, 20),
         duration,
@@ -51,7 +48,7 @@ class Overlay:
       self._timer.start(self._refresh_rate)
       self.showText(
         self.mediaInfo,
-        QFont(Config.MonospaceFont, 14, QFont.Bold),
+        QFont(self.config.MonospaceFont, 14, QFont.Bold),
         QColor(0xffff00),
         QPoint(20, 20),
         0,
