@@ -1,7 +1,7 @@
 import sys
 from enum import Enum
 
-from PyQt5.Qt import QTextCursor
+from PyQt5.Qt import QTextCursor, QKeySequence
 from PyQt5.QtWidgets import QMainWindow
 from .moc.mainwindow import Ui_MainWindow
 
@@ -14,18 +14,17 @@ class OnTop(Enum):
 
 class MainWindow(QMainWindow):
   ui = Ui_MainWindow()
-
-  def retranslate(self):
-    self.ui.retranslateUi(self)
+  overlay = None
 
   def __init__(self):
-    super().__init__()
+    QMainWindow.__init__(self)
     self.ui.setupUi(self)
 
     if sys.platform == 'linux' or sys.platform == 'unix': # todo: do this through Config
       self.ui.actionUpdate_Streaming_Support.setEnabled(False)
     self.addActions(self.ui.menubar.actions())
     self.ui.mpvFrame.installEventFilter(self)
+    self.ui.mpvFrame.setMouseTracking(True)
     # todo autohide
 
     # define data we're interested in (gets populated by engine)
@@ -43,9 +42,9 @@ class MainWindow(QMainWindow):
     self.show()
 
   def MapCommandActions(self):
-    """
+    '''
     Map the interface actions to engine commands
-    """
+    '''
     for cmd, act in [
       ('player.chapter += 1', self.ui.action_Next_Chapter),
       ('player.chapter -= 1', self.ui.action_Previous_Chapter),
@@ -62,7 +61,7 @@ class MainWindow(QMainWindow):
       ('player.frame_back_step()', self.ui.actionFrame_Back_Step),
       # ('deinterlace', self.ui.action_Deinterlace),
       # ('interpolate', self.ui.action_Motion_Interpolation),
-      ('player.mute = True', self.ui.action_Mute),
+      ('player.mute = not player.mute', self.ui.action_Mute),
       ('player.screenshot(includes="subtitles")', self.ui.actionWith_Subtitles),
       ('player.screenshot(includes="window")', self.ui.actionWithout_Subtitles),
       ('player.pause = not player.pause', self.ui.action_Play),
@@ -86,7 +85,7 @@ class MainWindow(QMainWindow):
       ('window.openUrl()', self.ui.actionOpen_URL),
       ('window.dim()', self.ui.action_Dim_Lights),
       ('window.showInFolder()', self.ui.actionShow_in_Folder),
-      ('window.output = True', self.ui.actionShow_D_ebug_Output),
+      ('window.output = not window.output', self.ui.actionShow_D_ebug_Output),
       ('window.preferences()', self.ui.action_Preferences),
       ('window.onlineHelp()', self.ui.actionOnline_Help),
       ('window.about()', self.ui.actionAbout_Mochi_MPlayer),
@@ -96,8 +95,8 @@ class MainWindow(QMainWindow):
       ('playlist.repeat = Repeat.Playlist', self.ui.action_Playlist),
       ('playlist.repeat = Repeat.This', self.ui.action_This_File),
       ('playlist.shuffle()', self.ui.actionSh_uffle),
-      ('playlist.show = True', self.ui.action_Show_Playlist),
-      ('playlist.full = True', self.ui.action_Hide_Album_Art),
+      ('playlist.show = not playlist.show', self.ui.action_Show_Playlist),
+      ('playlist.full = not playlist.full', self.ui.action_Hide_Album_Art),
       ('update.check()', self.ui.action_Check_for_Updates),
       ('update.youtube_dl()', self.ui.actionUpdate_Streaming_Support),
       ('overlay.media_info = not overlay.media_info', self.ui.actionMedia_Info),
@@ -110,56 +109,128 @@ class MainWindow(QMainWindow):
       # attach the function-call to the action
       act.triggered.connect(lambda v, f=f: exec(f, self.exec_scope))
 
+  def dragEnterEvent(self, event):
+    '''
+    Feedback when something is dragged into window.
+    '''
+    if event.mimeData().hasUrls() or event.mimeData().hasText():
+      event.acceptProposedAction()
+    return QMainWindow.dragEnterEvent(self, event)
+
+  def dropEvent(self, event):
+    '''
+    Process dropping something onto window, play it.
+    '''
+    mimeData = event.mimeData()
+    if mimeData.hasUrls():
+      for url in mimeData.urls():
+        if url.isLocalFile():
+          self.player.play(url.toLocalFile())
+        else:
+          self.player.play(url.url())
+      event.accept()
+    elif mimeData.hasText():
+      self.player.play(mimeData.text())
+      event.accept()
+    return QMainWindow.dropEvent(self, event)
+
+  def mousePressEvent(self, event):
+    return QMainWindow.mousePressEvent(self, event)
+
+  def mouseReleaseEvent(self, event):
+    return QMainWindow.mouseReleaseEvent(self, event)
+
+  def mouseMoveEvent(self, event):
+    return QMainWindow.mouseMoveEvent(self, event)
+
+  def eventFilter(self, obj, event):
+    return QMainWindow.eventFilter(self, obj, event)
+
+  def wheelEvent(self, event):
+    return QMainWindow.wheelEvent(self, event)
+
+  def keyPressEvent(self, event):
+    '''
+    Process window key events.
+    '''
+    # make sure we're not interfering with textboxes
+    if self.focusWidget() == self.ui.inputLineEdit and event.key()==Qt.Return:
+      return
+    # get the actual input binding
+    key = self.input.get(QKeySequence(event.modifiers() | event.key()).toString())
+    if key:
+      # execute the attached function
+      exec(key[0], self.exec_scope)
+      event.accept()
+    return QMainWindow.keyPressEvent(self, event)
+
+  def resizeEvent(self, event):
+    '''
+    Process when window is resized.
+    '''
+    if self.overlay and self.overlay.media_info:
+      self.overlay.refresh()
+    return QMainWindow.resizeEvent(self, event)
+
+  def mouseDoubleClickEvent(self, event):
+    '''
+
+    '''
+    if event.button() == Qt.LeftButton and ui.mpvFrame.geometry().contains(event.pos()):
+      self.fullscreen = not self.fullscreen
+      event.accept()
+    QMainWindow.mouseDoubleClickEvent(self, event)
+
   def fit(self, percent=0):
-    """
+    '''
     Fit window to a specific percentage of the video.
-    """
+    '''
     pass
 
   def jump(self):
-    """
+    '''
     Jump-to-time dialog.
-    """
+    '''
     pass
 
   def open(self):
-    """
+    '''
     Open file dialog.
-    """
+    '''
     pass
 
   def openUrl(self):
-    """
+    '''
     Open location dialog.
-    """
+    '''
     pass
 
   def dim(self):
-    """
+    '''
     Dim the screen.
-    """
+    '''
     pass
 
   def showInFolder(self):
-    """
+    '''
     Show the current file in the system explorer.
-    """
+    '''
     pass
 
   def preferences(self):
-    """
+    '''
     Show preferences dialog.
-    """
+    '''
     pass
 
   def onlineHelp(self):
-    """
+    '''
     Load online help.
-    """
+    '''
     pass
 
   def about(self):
-    """
+    '''
     Show our about dialog.
-    """
+    '''
     AboutDialog(self, self.config.version).show()

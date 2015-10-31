@@ -1,11 +1,11 @@
-"""
+'''
 Engine is the main controller of the player. It initalizes everything
   and facilitates communication between the models and views.
-"""
+'''
 
-import json, copy, locale
+import json, copy
 
-from PyQt5.Qt import QApplication
+from PyQt5.Qt import QApplication, QProcess
 from config import Config
 from ui.mainwindow import MainWindow
 from player import Player
@@ -18,13 +18,12 @@ from update import Update
 
 class Engine:
   def __init__(self, argv):
-    """
+    '''
     Creates all components
       argv: command-line arguments
-    """
+    '''
     # initialize everything
     qt = QApplication(argv)
-    locale.setlocale(locale.LC_NUMERIC, 'C') # reset locale to C for mpv
 
     self.window = MainWindow()
     self.player = Player()
@@ -50,6 +49,8 @@ class Engine:
     self.window.input = self.input
     self.window.playlist = self.playlist
     self.window.exec_scope = self.exec_scope
+    self.window.overlay = self.overlay
+    self.window.player = self.player
     # player
     self.player.attach(self.window.ui.mpvFrame.winId())
     # input
@@ -58,17 +59,21 @@ class Engine:
     # playlist
     self.playlist.player = self.player
     # translator
-    self.translator.register_translate_callback(self.window.retranslate)
-
-    self.load(self.config.settingsFile)
-
-  def __del__(self):
-    self.save(self.config.settingsFile)
+    self.translator.register_translate_callback(self.window.ui.retranslateUi)
 
   def exec_(self):
-    return self.qt.exec_()
+    '''
+    Main program loop.
+    '''
+    self.load(self.config.settingsFile)
+    res = self.qt.exec_()
+    self.save(self.config.settingsFile)
+    return res
 
   def load(self, file):
+    '''
+    Load from settings into various engine objects.
+    '''
     try:
       f = open(file, 'r')
       self.data.update(json.load(f))
@@ -78,6 +83,9 @@ class Engine:
     return True
 
   def save(self, file):
+    '''
+    Save from settings into various engine objects.
+    '''
     try:
       f = open(file, 'w')
       d = copy.deepcopy(dict(self.data))
@@ -91,7 +99,13 @@ class Engine:
     return True
 
   def new(self):
-    """
+    '''
     Create new instance of application.
-    """
-    pass
+    '''
+    if self.config.script:
+      # find main script filename
+      import __main__
+      args = [__main__.__file__]
+    else:
+      args = []
+    QProcess.startDetached(QApplication.applicationFilePath(), args)

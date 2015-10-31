@@ -1,7 +1,7 @@
-"""
+'''
 Config has certain globals that are used throughout the program
   that may be changed with command-line arguments.
-"""
+'''
 
 class Config:
   version = '2.1.0'
@@ -15,10 +15,11 @@ class Config:
   subtitle_fileypes = ["*.sub","*.srt","*.ass","*.ssa"]
   help = False
   verbose = False
+  script = True # are we a python script, or a wrapped executable?
 
   def __init__(self, argv):
-    """
+    '''
     Allows config overriding with any arg in argv like so:
     mochi-player --SettingsFile=/tmp/mochi-player.ini
-    """
+    '''
     self.__dict__.update({k[2:]:v for k,v in map(lambda s: s.split('='), filter(lambda s: s.startswith('--'), argv))})
