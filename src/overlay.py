@@ -20,6 +20,7 @@ class Overlay:
     self._overlay = self._min_overlay
     self._overlays = {}
     self._timer = None
+    self.media_info = False
 
   def showStatusText(self, text, duration = 4000):
     """

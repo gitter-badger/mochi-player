@@ -1,10 +1,10 @@
-import sys
 from enum import Enum
 
 from PyQt5.Qt import QTextCursor, QKeySequence
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from .moc.mainwindow import Ui_MainWindow
 
+from util import Util
 from .aboutdialog import AboutDialog
 from .locationdialog import LocationDialog
 
@@ -20,9 +20,7 @@ class MainWindow(QMainWindow):
   def __init__(self):
     QMainWindow.__init__(self)
     self.ui.setupUi(self)
-
-    if sys.platform == 'linux' or sys.platform == 'unix': # todo: do this through Config
-      self.ui.actionUpdate_Streaming_Support.setEnabled(False)
+    self.ui.actionUpdate_Streaming_Support.setEnabled(Util.canUpdateStreamingSupport())
     self.addActions(self.ui.menubar.actions())
     self.ui.mpvFrame.installEventFilter(self)
     self.ui.mpvFrame.setMouseTracking(True)
