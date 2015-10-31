@@ -1,11 +1,10 @@
 from PyQt5.QtWidgets import QDialog
 from .moc.aboutdialog import Ui_AboutDialog
-from config import Config
 
 class AboutDialog(QDialog):
   ui = Ui_AboutDialog()
-  def __init__(self, parent):
+  def __init__(self, parent, version):
     super(AboutDialog, self).__init__(parent)
     self.ui.setupUi(self)
-    self.ui.versionLabel.setText('Mochi-Player %s' % (Config.Version))
-    self.ui.closeButton.clicked(self.close)
+    self.ui.versionLabel.setText('Mochi-Player %s' % (version))
+    self.ui.closeButton.clicked.connect(self.close)

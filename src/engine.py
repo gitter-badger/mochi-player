@@ -42,13 +42,14 @@ class Engine:
     self.config = Config(argv)
     self.qt = qt
     self.engine = self
+    self.exec_scope = {k: v for k, v in self.__dict__.items() }
 
     # connect everything
     # window
     self.window.config = self.config
     self.window.input = self.input
     self.window.playlist = self.playlist
-    self.window.exec_scope = {k: v for k, v in self.__dict__.items() }
+    self.window.exec_scope = self.exec_scope
     # player
     self.player.attach(self.window.ui.mpvFrame.winId())
     # input

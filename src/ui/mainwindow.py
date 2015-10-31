@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
       ('player.video_aspect = "16:9"', self.ui.actionForce_16_9),
       ('player.video_aspect = "2.35:1"', self.ui.actionForce_2_35_1),
       ('player.video_aspect = "4:3"', self.ui.actionForce_4_3),
-      ('player.sub-visibility = !player.sub-visibility', self.ui.actionShow_Subtitles),
+      ('player.sub_visibility = not player.sub_visibility', self.ui.actionShow_Subtitles),
       ('player.time_pos = 0', self.ui.action_Restart),
       ('player.frame_step()', self.ui.action_Frame_Step),
       ('player.frame_back_step()', self.ui.actionFrame_Back_Step),
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
       ('player.mute = True', self.ui.action_Mute),
       ('player.screenshot(includes="subtitles")', self.ui.actionWith_Subtitles),
       ('player.screenshot(includes="window")', self.ui.actionWithout_Subtitles),
-      ('player.pause = !player.pause', self.ui.action_Play),
+      ('player.pause = not player.pause', self.ui.action_Play),
       ('player.stop()', self.ui.action_Stop),
       ('player.volume += 5', self.ui.action_Increase_Volume),
       ('player.volume -= 5', self.ui.action_Decrease_Volume),
@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
       ('window.fit(100)', self.ui.action100),
       ('window.fit(150)', self.ui.action150),
       ('window.fit(200)', self.ui.action200),
-      ('window.fullscreen = !window.fullscreen', self.ui.action_Full_Screen),
+      ('window.fullscreen = not window.fullscreen', self.ui.action_Full_Screen),
       ('window.jump()', self.ui.action_Jump_to_Time),
       ('window.open()', self.ui.action_Open_File),
       ('window.openUrl()', self.ui.actionOpen_URL),
@@ -100,12 +100,15 @@ class MainWindow(QMainWindow):
       ('playlist.full = True', self.ui.action_Hide_Album_Art),
       ('update.check()', self.ui.action_Check_for_Updates),
       ('update.youtube_dl()', self.ui.actionUpdate_Streaming_Support),
-      ('overlay.media_info = !overlay.media_info', self.ui.actionMedia_Info),
+      ('overlay.media_info = not overlay.media_info', self.ui.actionMedia_Info),
       ('engine.new()', self.ui.action_New_Player),
       ('qt.aboutQt()', self.ui.actionAbout_Qt),
       ('qt.quit()', self.ui.actionE_xit),
     ]:
-      act.triggered.connect(lambda v, cmd=cmd: exec(cmd, self.exec_scope))
+      # compile the function into python byte-code
+      f = compile(cmd, '<string>', 'single')
+      # attach the function-call to the action
+      act.triggered.connect(lambda v, f=f: exec(f, self.exec_scope))
 
   def fit(self, percent=0):
     """
@@ -155,14 +158,8 @@ class MainWindow(QMainWindow):
     """
     pass
 
-  def aboutQt(self):
-    """
-    Show qt about dialog.
-    """
-    pass
-
   def about(self):
     """
     Show our about dialog.
     """
-    pass
+    AboutDialog(self, self.config.version).show()
