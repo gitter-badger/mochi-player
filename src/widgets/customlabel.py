@@ -8,4 +8,4 @@ class CustomLabel(QLabel):
     if self.isEnabled() and event.button() == Qt.LeftButton:
       self.clicked.emit()
       event.accept()
-    super(CustomLabel, self).mousePressEvent(event)
+    QLabel.mousePressEvent(self, event)

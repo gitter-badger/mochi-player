@@ -38,10 +38,10 @@ class SeekBar(CustomSlider):
               self.totalTime),
             self,
             self.rect()))
-    super(QSlider, self).mouseMoveEvent(event)
+    QSlider.mouseMoveEvent(self, event)
 
   def paintEvent(self, event):
-    super(CustomSlider, self).paintEvent(event)
+    CustomSlider.paintEvent(self, event)
     if self.isEnabled() and self.tickReady:
       region = event.rect()
       ppainter = QPainter(self)

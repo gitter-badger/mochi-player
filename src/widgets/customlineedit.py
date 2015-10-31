@@ -7,5 +7,6 @@ class CustomLineEdit(QLineEdit):
   def keyPressEvent(self, event):
     if event.key() == Qt.Key_Return:
       self.submitted.emit(self.text())
+      self.setText(str())
       event.accept()
-    super(CustomLineEdit, self).keyPressEvent(event)
+    QLineEdit.keyPressEvent(self, event)

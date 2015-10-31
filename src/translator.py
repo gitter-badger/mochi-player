@@ -1,7 +1,7 @@
-"""
+'''
 Translator allows us to translate text throughout the application
   into available languages.
-"""
+'''
 
 from PyQt5.Qt import QTranslator, QLibraryInfo, QLocale, qApp
 
@@ -12,10 +12,10 @@ class Translator:
     self.lang, self.qt, self.app = None, None, None
 
   def register_translate_callback(self, callback):
-    """
+    '''
     Components that need to reload strings should register callbacks
       via this function to be called after translation.
-    """
+    '''
     self.translate_callback.append(callback)
 
   def translate(self, lang):

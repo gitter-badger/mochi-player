@@ -1,7 +1,7 @@
-"""
+'''
 Overlay provides a way of overlaying data onto the video canvas for
   status messages or other purposes.
-"""
+'''
 
 from PyQt5.Qt import QThread, QTimer, \
   QImage, QPoint, QColor, \
@@ -23,9 +23,9 @@ class Overlay:
     self.media_info = False
 
   def showStatusText(self, text, duration = 4000):
-    """
+    '''
     Shows simple overlay status text for a specified duration.
-    """
+    '''
     if text != str() and duration != 0:
       self.showText(
         text,
@@ -38,9 +38,9 @@ class Overlay:
       self._remove(self._status_overlay)
 
   def showInfoText(self, show = True):
-    """
+    '''
     Shows the media-info overlay.
-    """
+    '''
     if show:
       if self._timer:
         self._timer = QTimer()
@@ -60,10 +60,10 @@ class Overlay:
       self._remove(self._info_overlay)
 
   def showText(self, text, font, color, pos, duration, id = -1):
-    """
+    '''
     Handles putting specific overlays on the different mpv
       provided overlay areas or uses a Qt label.
-    """
+    '''
     if id == -1:
       id = (self._overlay % self._max_overlay) + self._min_overlay
 
@@ -120,9 +120,9 @@ class Overlay:
     self._overlays[id] = (label, canvas, timer)
 
   def _remove(self, id):
-    """
+    '''
     Removes an overlay from both mpv and the list of overlays
-    """
+    '''
     self.mpv.remove_overlay(id)
     overlay = self._overlays.get(id)
     if overlay:

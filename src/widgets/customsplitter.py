@@ -8,7 +8,7 @@ class CustomSplitter(QSplitter):
   positionChanged = pyqtSignal(int)
 
   def __init__(self, parent):
-    super(CustomSplitter, self).__init__(parent)
+    QSplitter.__init__(self, parent)
     self.splitterMoved.connect(
       lambda pos, index: \
         index == 1 and \

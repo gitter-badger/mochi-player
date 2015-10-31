@@ -14,4 +14,4 @@ class OpenButton(QPushButton):
     elif event.button == Qt.RightButton:
       self.RightClick.emit()
     event.accept()
-    # super(QPushButton, self).mousePressEvent(event)
+    # QPushButton.mousePressEvent(self, event)

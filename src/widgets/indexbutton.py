@@ -28,4 +28,4 @@ class IndexButton(QPushButton):
   def mouseMoveEvent(self, event):
     if self.isEnabled() and self.index > 0:
       QToolTip.showText(event.globalPos(), str(abs(index)), self, self.rect())
-    super(IndexButton, self).mouseMoveEvent(event)
+    QPushButton.mouseMoveEvent(self, event)

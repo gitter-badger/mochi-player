@@ -15,4 +15,4 @@ class CustomSlider(QSlider):
         event.x(),
         self.width()))
       event.accept()
-    super(CustomSlider, self).mousePressEvent(event)
+    QSlider.mousePressEvent(self, event)

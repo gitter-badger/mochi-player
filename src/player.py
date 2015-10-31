@@ -1,7 +1,7 @@
-"""
+'''
 Player provides an interface between the core video player engine
   and this program's engine.
-"""
+'''
 
 import locale
 from mpv import MPV
@@ -16,8 +16,8 @@ class Player(MPV):
       MPV.play(self, f)
 
   def stop(self):
-    """
+    '''
     Stop playback.
-    """
+    '''
     self.time_pos = self.time_start
     self.pause = True

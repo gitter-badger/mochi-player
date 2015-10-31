@@ -1,6 +1,7 @@
 from enum import Enum
 
 from PyQt5.Qt import QTextCursor, QKeySequence
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from .moc.mainwindow import Ui_MainWindow
 
@@ -37,8 +38,24 @@ class MainWindow(QMainWindow):
     self.showAll = True
     self.splitter = 254
     self.trayIcon = False
+
     self._mapCommandActions()
+
+    # connect signals and slots
+    self.ui.inputLineEdit.submitted.connect(
+      lambda s: self.eval(compile(s, '<string>', 'single')))
+
     self.show()
+
+  def eval(self, s):
+    try:
+      exec(s, self.exec_scope)
+    except Exception as e:
+      print(e)
+
+  def output(self, s):
+    self.ui.outputTextEdit.moveCursor(QTextCursor.End)
+    self.ui.outputTextEdit.insertPlainText(s)
 
   def _mapCommandActions(self):
     '''
@@ -106,7 +123,7 @@ class MainWindow(QMainWindow):
       # compile the function into python byte-code
       f = compile(cmd, '<string>', 'single')
       # attach the function-call to the action
-      act.triggered.connect(lambda v, f=f: exec(f, self.exec_scope))
+      act.triggered.connect(lambda v, f = f: self.eval(f))
 
   def dragEnterEvent(self, event):
     '''
@@ -153,7 +170,7 @@ class MainWindow(QMainWindow):
     Process window key events.
     '''
     # make sure we're not interfering with textboxes
-    if self.focusWidget() == self.ui.inputLineEdit and event.key()==Qt.Return:
+    if self.focusWidget() == self.ui.inputLineEdit and event.key() == Qt.Key_Return:
       return
     # get the actual input binding
     key = self.input.get(QKeySequence(event.modifiers() | event.key()).toString())

@@ -1,8 +1,8 @@
 #!/bin/python
 
-"""
+'''
 mochi-player - a mpv based media player
-"""
+'''
 
 if __name__ == '__setup__':
   # compile qt ui
