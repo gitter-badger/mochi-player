@@ -26,7 +26,7 @@ class Engine:
     qt = QApplication(argv)
 
     self.window = MainWindow()
-    self.player = Player()
+    self.player = Player(self.window.ui.mpvFrame.winId())
     self.input = Input()
     self.overlay = Overlay()
     self.playlist = Playlist()
@@ -52,7 +52,6 @@ class Engine:
     self.window.overlay = self.overlay
     self.window.player = self.player
     # player
-    self.player.attach(self.window.ui.mpvFrame.winId())
     # input
     # overlay
     self.overlay.config = self.config

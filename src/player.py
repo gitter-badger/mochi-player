@@ -7,17 +7,13 @@ import locale
 from mpv import MPV
 
 class Player(MPV):
-  def __init__(self):
+  def __init__(self, wid):
     locale.setlocale(locale.LC_NUMERIC, 'C') # reset locale to C for mpv
-    MPV.__init__(self) # todo--deal with event loop
-    locale.setlocale(locale.LC_NUMERIC, '')
-    # todo
+    MPV.__init__(self, wid=int(wid)) # todo--deal with event loop
 
-  def attach(self, win):
-    """
-    Attach the mpv engine to the window control.
-    """
-    self.window_id = win
+  def play(self, f):
+    if f:
+      MPV.play(self, f)
 
   def stop(self):
     """

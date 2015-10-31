@@ -37,7 +37,7 @@ class Input(dict):
       ('Ctrl+Left', 'playlist.prev()', 'Play previous file'),
       ('Ctrl+S', 'player.stop()', 'Stop playback'),
       ('Ctrl+U', 'window.openUrl()', 'Show location dialog'),
-      ('Ctrl+V', 'player.play(qt.clipboard.text())', 'Open clipboard location'),
+      ('Ctrl+V', 'player.play(qt.clipboard().text())', 'Open clipboard location'),
       ('Ctrl+F', 'playlist.show = not playlist.show', 'Toggle playlist visibility'),
       # ('Ctrl+Z', '', 'Open the last played file'),
       ('Ctrl+G', 'window.output = not window.output', 'Access command-line'),

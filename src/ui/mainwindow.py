@@ -2,10 +2,11 @@ import sys
 from enum import Enum
 
 from PyQt5.Qt import QTextCursor, QKeySequence
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from .moc.mainwindow import Ui_MainWindow
 
 from .aboutdialog import AboutDialog
+from .locationdialog import LocationDialog
 
 class OnTop(Enum):
   Never=0
@@ -38,10 +39,10 @@ class MainWindow(QMainWindow):
     self.showAll = True
     self.splitter = 254
     self.trayIcon = False
-    self.MapCommandActions()
+    self._mapCommandActions()
     self.show()
 
-  def MapCommandActions(self):
+  def _mapCommandActions(self):
     '''
     Map the interface actions to engine commands
     '''
@@ -71,7 +72,7 @@ class MainWindow(QMainWindow):
       ('player.speed += 0.1', self.ui.action_Increase),
       ('player.speed -= 0.1', self.ui.action_Decrease),
       ('player.speed = 1.0', self.ui.action_Reset),
-      ('player.play(qt.clipboard.text())', self.ui.actionOpen_Path_from_Clipboard),
+      ('player.play(qt.clipboard().text())', self.ui.actionOpen_Path_from_Clipboard),
       ('window.add_subtitle()', self.ui.action_Add_Subtitle_File),
       ('window.fit()', self.ui.action_To_Current_Size),
       ('window.fit(50)', self.ui.action50),
@@ -174,7 +175,7 @@ class MainWindow(QMainWindow):
 
   def mouseDoubleClickEvent(self, event):
     '''
-
+    Processed when window is double clicked.
     '''
     if event.button() == Qt.LeftButton and ui.mpvFrame.geometry().contains(event.pos()):
       self.fullscreen = not self.fullscreen
@@ -197,13 +198,23 @@ class MainWindow(QMainWindow):
     '''
     Open file dialog.
     '''
-    pass
+    self.player.play(
+      QFileDialog.getOpenFileName(
+        self,
+        self.tr('Open File'),
+        self.player.path,
+        ';;'.join((
+          '%s (%s)' % (self.tr('Media Files'), ' '.join(self.config.media_filetypes)),
+          '%s (%s)' % (self.tr('Video Files'), ' '.join(self.config.video_filetypes)),
+          '%s (%s)' % (self.tr('Audio Files'), ' '.join(self.config.audio_filetypes)),
+          '%s (*.*)' % (self.tr('All Files')),
+        )), str(), QFileDialog.DontUseSheet)[0])
 
   def openUrl(self):
     '''
     Open location dialog.
     '''
-    pass
+    self.player.play(LocationDialog.getUrl(self.player.path, self))
 
   def dim(self):
     '''
@@ -233,4 +244,4 @@ class MainWindow(QMainWindow):
     '''
     Show our about dialog.
     '''
-    AboutDialog(self, self.config.version).show()
+    AboutDialog.about(self.config.version, self)
