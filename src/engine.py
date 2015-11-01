@@ -62,6 +62,8 @@ class Engine:
     self.input.mouse.eval = self.eval
     # overlay
     self.overlay.config = self.config
+    self.overlay.mpvFrame = self.window.ui.mpvFrame
+    self.overlay.player = self.player
     # playlist
     self.playlist.player = self.player
     # translator

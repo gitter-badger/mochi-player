@@ -29,7 +29,7 @@ class Overlay:
     if text != str() and duration != 0:
       self.showText(
         text,
-        QFont(self.config.MonospaceFont, 14, QFont.Bold),
+        QFont(self.config.monospaceFont, 14, QFont.Bold),
         QColor(0xffffff),
         QPoint(20, 20),
         duration,
@@ -49,7 +49,7 @@ class Overlay:
       self._timer.start(self._refresh_rate)
       self.showText(
         self.mediaInfo,
-        QFont(self.config.MonospaceFont, 14, QFont.Bold),
+        QFont(self.config.monospaceFont, 14, QFont.Bold),
         QColor(0xffff00),
         QPoint(20, 20),
         0,
@@ -69,10 +69,10 @@ class Overlay:
 
     fm = QFontMetrics(font)
     lines = text.split('\n')
-    h = fm.height() * lines.length()
+    h = fm.height() * len(lines)
     w = max(map(lambda l: fm.width(l), lines))
-    xF = (self.mpvFrameWidth - 2 * pos.x()) / (self._fm_correction * w)
-    yF = (self.mpvFrameHeight - 2 * pos.y()) / h
+    xF = (self.mpvFrame.width() - 2 * pos.x()) / (self._fm_correction * w)
+    yF = (self.mpvFrame.height() - 2 * pos.y()) / h
     font.setPointSizeF(min(font.pointSizeF() * min(xF, yF), font.pointSizeF()))
 
     fm = QFontMetrics(font)
@@ -89,13 +89,13 @@ class Overlay:
 
     painter = QPainter(canvas)
     painter.setRenderHint(QPainter.Antialiasing)
-    painter.setCompositionMode(QPainter.ComposititionMode_Overlay)
+    painter.setCompositionMode(QPainter.CompositionMode_Overlay)
     painter.setFont(font)
     painter.setPen(QColor(0, 0, 0))
     painter.setBrush(color)
     painter.drawPath(path)
 
-    self.mpv.add_overlay(
+    self.player.add_overlay(
       self._overlay if id == -1 else id,
       pos.x(), pos.y(),
       '&%d' % (quintptr(canvas.bits())),
@@ -123,7 +123,7 @@ class Overlay:
     '''
     Removes an overlay from both mpv and the list of overlays
     '''
-    self.mpv.remove_overlay(id)
+    self.player.remove_overlay(id)
     overlay = self._overlays.get(id)
     if overlay:
       del overlay

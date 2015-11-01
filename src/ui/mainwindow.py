@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PyQt5.Qt import QTextCursor, QDesktopServices, QUrl
+from PyQt5.Qt import QTextCursor, QDesktopServices, QUrl, qApp, QStyle, QSize
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from .moc.mainwindow import Ui_MainWindow
@@ -136,10 +136,16 @@ class MainWindow(QMainWindow):
     '''
     Fit window to a specific percentage of the video.
     '''
-    if self.isFullScreen() or self.isMaximized() or not window.ui.menuFit_Window.isEnabled():
-      return
+    # if self.isFullScreen() or self.isMaximized() or not self.ui.menuFit_Window.isEnabled():
+    #   return
 
-    vG = self.player.video_params # video geometry
+    # create a video_params structure
+    class video_params:
+      def __init__(self, vp):
+        self.width, self.height = vp['w'], vp['h']
+        self.dwidth, self.dheight = vp['dw'], vp['dh']
+
+    vG = video_params(self.player.video_params) # video geometry
     mG = self.ui.mpvFrame.geometry() # mpv geometry
     wfG = self.frameGeometry() # frame geometry of window (window geometry + window frame)
     wG = self.geometry() # window geometry
@@ -205,8 +211,7 @@ class MainWindow(QMainWindow):
 
     # note: the above block is required because there is no setFrameGeometry function
 
-    if msg:
-      self.overlay.showText(self.tr("Fit Window: %0").arg(tr("To Current Size") if percent == 0 else ("%d%%" % (precent))))
+    self.overlay.showStatusText(self.tr('Fit Window: %s') % (self.tr('To Current Size') if percent == 0 else ('%d%%' % (percent))))
 
   def jump(self):
     '''
@@ -226,9 +231,9 @@ class MainWindow(QMainWindow):
         self.tr('Open File'),
         self.player.path,
         ';;'.join((
-          '%s (%s)' % (self.tr('Media Files'), ' '.join(self.config.media_filetypes)),
-          '%s (%s)' % (self.tr('Video Files'), ' '.join(self.config.video_filetypes)),
-          '%s (%s)' % (self.tr('Audio Files'), ' '.join(self.config.audio_filetypes)),
+          '%s (%s)' % (self.tr('Media Files'), ' '.join(self.config.mediaFiletypes)),
+          '%s (%s)' % (self.tr('Video Files'), ' '.join(self.config.videoFiletypes)),
+          '%s (%s)' % (self.tr('Audio Files'), ' '.join(self.config.audioFiletypes)),
           '%s (*.*)' % (self.tr('All Files')),
         )), str(), QFileDialog.DontUseSheet)[0])
 
