@@ -3,10 +3,38 @@ Input deals with mapping bindings (key/mouse/gesture) to actual
   functions in the engine.
 '''
 
-class Input(dict):
+from PyQt5.Qt import QKeySequence
+
+# todo: get this to work properly
+
+class Input:
+  class KeyInput:
+    def __init__(self, parent):
+      self.input = parent
+
+    def press(self, event):
+      # get the actual input binding
+      key = self.input.get(QKeySequence(event.modifiers() | event.key()).toString())
+      if key:
+        # execute the attached function
+        exec(key[0], self.input.exec_scope)
+        event.accept()
+
+  class MouseInput:
+    def __init__(self, parent):
+      self.input = parent
+
+    def press(self, event):
+      pass
+    def release(self, event):
+      pass
+    def move(self, event):
+      pass
+    def wheel(self, event):
+      pass
+
   def __init__(self):
-    dict.__init__(self)
-    self.update({k: (compile(cmd, '<string>', 'single'), label) for k, cmd, label in [
+    self.input = {k: (compile(cmd, '<string>', 'single'), label) for k, cmd, label in [
       ('Ctrl++', 'player.sub_scale += 0.1', 'Increase sub size'),
       ('Ctrl+-', 'player.sub_scale -= 0.1', 'Decrease sub size'),
       ('Ctrl+W', 'player.sub_visibility = not player.sub_visibility', 'Toggle subtitle visibility'),
@@ -54,4 +82,6 @@ class Input(dict):
       ('Up', 'playlist.selection -= 1', 'Select previous file on playlist'),
       ('Return', 'player.play(playlist.selected)', 'Play selected file on playlist'),
       ('Del', 'playlist.remove(playlist.selected)', 'Remove selected file from playlist'),
-    ]})
+    ]}
+
+    self.key, self.mouse = Input.KeyInput(self.input), Input.MouseInput(self.input)

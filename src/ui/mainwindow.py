@@ -8,6 +8,7 @@ from .moc.mainwindow import Ui_MainWindow
 from util import Util
 from .aboutdialog import AboutDialog
 from .locationdialog import LocationDialog
+from .jumpdialog import JumpDialog
 
 class OnTop(Enum):
   Never=0
@@ -61,6 +62,9 @@ class MainWindow(QMainWindow):
     '''
     Map the interface actions to engine commands
     '''
+
+    # todo: move this to input
+
     for cmd, act in [
       ('player.chapter += 1', self.ui.action_Next_Chapter),
       ('player.chapter -= 1', self.ui.action_Previous_Chapter),
@@ -150,34 +154,35 @@ class MainWindow(QMainWindow):
       event.accept()
     return QMainWindow.dropEvent(self, event)
 
-  def mousePressEvent(self, event):
-    return QMainWindow.mousePressEvent(self, event)
-
-  def mouseReleaseEvent(self, event):
-    return QMainWindow.mouseReleaseEvent(self, event)
-
-  def mouseMoveEvent(self, event):
-    return QMainWindow.mouseMoveEvent(self, event)
-
   def eventFilter(self, obj, event):
     return QMainWindow.eventFilter(self, obj, event)
 
+  def mousePressEvent(self, event):
+    '''
+    Process window mouse events.
+    '''
+    self.input.mouse.press(event)
+    return QMainWindow.mousePressEvent(self, event)
+
+  def mouseReleaseEvent(self, event):
+    self.input.mouse.release(event)
+    return QMainWindow.mouseReleaseEvent(self, event)
+
+  def mouseMoveEvent(self, event):
+    self.input.mouse.move(event)
+    return QMainWindow.mouseMoveEvent(self, event)
+
   def wheelEvent(self, event):
+    self.input.mouse.wheel(event)
     return QMainWindow.wheelEvent(self, event)
 
   def keyPressEvent(self, event):
     '''
     Process window key events.
     '''
-    # make sure we're not interfering with textboxes
-    if self.focusWidget() == self.ui.inputLineEdit and event.key() == Qt.Key_Return:
-      return
-    # get the actual input binding
-    key = self.input.get(QKeySequence(event.modifiers() | event.key()).toString())
-    if key:
-      # execute the attached function
-      exec(key[0], self.exec_scope)
-      event.accept()
+    if not (self.focusWidget() == self.ui.inputLineEdit and
+            event.key() == Qt.Key_Return):
+      self.input.key.press(event)
     return QMainWindow.keyPressEvent(self, event)
 
   def resizeEvent(self, event):
@@ -201,13 +206,85 @@ class MainWindow(QMainWindow):
     '''
     Fit window to a specific percentage of the video.
     '''
-    pass
+    if self.isFullScreen() or self.isMaximized() or not window.ui.menuFit_Window.isEnabled():
+      return
+
+    vG = self.player.video_params # video geometry
+    mG = self.ui.mpvFrame.geometry() # mpv geometry
+    wfG = self.frameGeometry() # frame geometry of window (window geometry + window frame)
+    wG = self.geometry() # window geometry
+    aG = qApp.desktop().availableGeometry(wfG.center()) # available geometry of the screen we're in--(geometry not including the taskbar)
+
+    # obtain natural video aspect ratio
+    if vG.width == 0 or vG.height == 0: # width/height are 0 when there is no output
+      return
+
+    if vG.dwidth == 0 or vG.dheight == 0: # dwidth/height are 0 on load
+      a = float(vG.width) / vG.height # use video width and height for aspect ratio
+    else:
+      a = float(vG.dwidth) / vG.dheight # use display width and height for aspect ratio
+
+    # calculate resulting display:
+    if percent == 0: # fit to window
+      # set our current mpv frame dimensions
+      w = mG.width()
+      h = mG.height()
+
+      c = w / h - a # comparison
+      e = 0.01 # epsilon (deal with rounding errors) we consider -eps < 0 < eps ==> 0
+
+      if c > e: # too wide
+        w = h * a # calculate width based on the correct height
+      elif c < -e: # too long
+        h = w / a # calculate height based on the correct width
+    else: # fit into desired dimensions
+        scale = percent / 100.0 # get scale
+
+        w = vG.width * scale # get scaled width
+        h = vG.height * scale # get scaled height
+
+    dW = w + (wfG.width() - mG.width()) # calculate display width of the window
+    dH = h + (wfG.height() - mG.height()) # calculate display height of the window
+
+    if dW > aG.width(): # if the width is bigger than the available area
+      dW = aG.width() # set the width equal to the available area
+      w = dW - (wfG.width() - mG.width()) # calculate the width
+      h = w / a # calculate height
+      dH = h + (wfG.height() - mG.height()) # calculate new display height
+    if dH > aG.height(): # if the height is bigger than the available area
+      dH = aG.height() # set the height equal to the available area
+      h = dH - (wfG.height() - mG.height()) # calculate the height
+      w = h * a # calculate the width accordingly
+      dW = w + (wfG.width() - mG.width()) # calculate new display width
+
+    # get the centered rectangle we want
+    rect = QStyle.alignedRect(
+      Qt.LeftToRight,
+      Qt.AlignCenter,
+      QSize(dW, dH),
+      wfG if percent == 0 else aG) # center in window (autofit) or on our screen
+
+    # adjust the rect to compensate for the frame
+    rect.setLeft(rect.left() + (wG.left() - wfG.left()))
+    rect.setTop(rect.top() + (wG.top() - wfG.top()))
+    rect.setRight(rect.right() - (wfG.right() - wG.right()))
+    rect.setBottom(rect.bottom() - (wfG.bottom() - wG.bottom()))
+
+    # finally set the geometry of the window
+    self.setGeometry(rect);
+
+    # note: the above block is required because there is no setFrameGeometry function
+
+    if msg:
+      self.overlay.showText(self.tr("Fit Window: %0").arg(tr("To Current Size") if percent == 0 else ("%d%%" % (precent))))
 
   def jump(self):
     '''
     Jump-to-time dialog.
     '''
-    pass
+    time = JumpDialog.getTime(self.player.length, self)
+    if time:
+      self.player.time = time
 
   def open(self):
     '''

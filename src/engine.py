@@ -53,6 +53,7 @@ class Engine:
     self.window.player = self.player
     # player
     # input
+    self.input.exec_scope = self.exec_scope
     # overlay
     self.overlay.config = self.config
     # playlist
