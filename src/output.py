@@ -15,7 +15,7 @@ class Output(QObject):
       self._stream = stream
 
     def write(self, text):
-      self._stream.write(text)
+      # self._stream.write(text)
       self.written.emit(text, self._stream)
 
     def __getattr__(self, name):

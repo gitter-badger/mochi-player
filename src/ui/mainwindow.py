@@ -41,10 +41,18 @@ class MainWindow(QMainWindow):
     self.trayIcon = False
 
     # connect signals and slots
-    self.ui.inputLineEdit.submitted.connect(
-      lambda s: self.eval(compile(s, '<string>', 'single')))
+    self.ui.inputLineEdit.submitted.connect(self.execute)
 
     self.show()
+
+  def execute(self, command):
+    '''
+    Safely compile and evaluate a user python statement
+    '''
+    try:
+      self.eval(compile(command, '<string>', 'single'))
+    except Exception as e:
+      print('Error in window.execute(%s): %s' % (command, e))
 
   def output(self, text):
     '''

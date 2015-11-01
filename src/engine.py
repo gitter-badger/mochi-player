@@ -42,7 +42,7 @@ class Engine:
     # volatile initialization
     self.config = Config(argv)
     self.qt = qt
-    self.engine = self
+    self.quit = qt.quit
     self.exec_scope = {k: v for k, v in self.__dict__.items() }
 
     # connect everything
@@ -77,6 +77,9 @@ class Engine:
     return res
 
   def eval(self, s):
+    '''
+    Safely evaluate a python statement in the scope of the engine class.
+    '''
     try:
       exec(s, self.exec_scope)
     except Exception as e:
