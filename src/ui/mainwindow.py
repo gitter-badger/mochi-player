@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PyQt5.Qt import QTextCursor, QKeySequence, QDesktopServices, QUrl
+from PyQt5.Qt import QTextCursor, QDesktopServices, QUrl
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from .moc.mainwindow import Ui_MainWindow
@@ -40,95 +40,43 @@ class MainWindow(QMainWindow):
     self.splitter = 254
     self.trayIcon = False
 
-    self._mapCommandActions()
-
     # connect signals and slots
     self.ui.inputLineEdit.submitted.connect(
       lambda s: self.eval(compile(s, '<string>', 'single')))
 
     self.show()
 
-  def eval(self, s):
-    try:
-      exec(s, self.exec_scope)
-    except Exception as e:
-      print(e)
+  # Delegate input events to input class
+  def mousePressEvent(self, event):
+    self.input.mouse.press(event)
+    return QMainWindow.mousePressEvent(self, event)
 
-  def output(self, s):
-    self.ui.outputTextEdit.moveCursor(QTextCursor.End)
-    self.ui.outputTextEdit.insertPlainText(s)
+  def mouseMoveEvent(self, event):
+    self.input.mouse.move(event)
+    return QMainWindow.mouseMoveEvent(self, event)
 
-  def _mapCommandActions(self):
-    '''
-    Map the interface actions to engine commands
-    '''
+  def mouseReleaseEvent(self, event):
+    self.input.mouse.release(event)
+    return QMainWindow.mouseReleaseEvent(self, event)
 
-    # todo: move this to input
+  def mouseDoubleClickEvent(self, event):
+    self.input.mouse.doubleClick(event)
+    return QMainWindow.mouseDoubleClickEvent(self, event)
 
-    for cmd, act in [
-      ('player.chapter += 1', self.ui.action_Next_Chapter),
-      ('player.chapter -= 1', self.ui.action_Previous_Chapter),
-      ('player.sub_scale = 1', self.ui.action_Reset_Size),
-      ('player.sub_scale += 0.1', self.ui.action_Size),
-      ('player.sub_scale -= 0.1', self.ui.actionS_ize),
-      ('player.video_aspect = -1', self.ui.action_Auto_Detect),
-      ('player.video_aspect = "16:9"', self.ui.actionForce_16_9),
-      ('player.video_aspect = "2.35:1"', self.ui.actionForce_2_35_1),
-      ('player.video_aspect = "4:3"', self.ui.actionForce_4_3),
-      ('player.sub_visibility = not player.sub_visibility', self.ui.actionShow_Subtitles),
-      ('player.time_pos = 0', self.ui.action_Restart),
-      ('player.frame_step()', self.ui.action_Frame_Step),
-      ('player.frame_back_step()', self.ui.actionFrame_Back_Step),
-      # ('deinterlace', self.ui.action_Deinterlace),
-      # ('interpolate', self.ui.action_Motion_Interpolation),
-      ('player.mute = not player.mute', self.ui.action_Mute),
-      ('player.screenshot(includes="subtitles")', self.ui.actionWith_Subtitles),
-      ('player.screenshot(includes="window")', self.ui.actionWithout_Subtitles),
-      ('player.pause = not player.pause', self.ui.action_Play),
-      ('player.stop()', self.ui.action_Stop),
-      ('player.volume += 5', self.ui.action_Increase_Volume),
-      ('player.volume -= 5', self.ui.action_Decrease_Volume),
-      ('player.speed += 0.1', self.ui.action_Increase),
-      ('player.speed -= 0.1', self.ui.action_Decrease),
-      ('player.speed = 1.0', self.ui.action_Reset),
-      ('player.play(qt.clipboard().text())', self.ui.actionOpen_Path_from_Clipboard),
-      ('window.add_subtitle()', self.ui.action_Add_Subtitle_File),
-      ('window.fit()', self.ui.action_To_Current_Size),
-      ('window.fit(50)', self.ui.action50),
-      ('window.fit(75)', self.ui.action75),
-      ('window.fit(100)', self.ui.action100),
-      ('window.fit(150)', self.ui.action150),
-      ('window.fit(200)', self.ui.action200),
-      ('window.fullscreen = not window.fullscreen', self.ui.action_Full_Screen),
-      ('window.jump()', self.ui.action_Jump_to_Time),
-      ('window.open()', self.ui.action_Open_File),
-      ('window.openUrl()', self.ui.actionOpen_URL),
-      ('window.dim()', self.ui.action_Dim_Lights),
-      ('window.showInFolder()', self.ui.actionShow_in_Folder),
-      ('window.output = not window.output', self.ui.actionShow_D_ebug_Output),
-      ('window.preferences()', self.ui.action_Preferences),
-      ('window.onlineHelp()', self.ui.actionOnline_Help),
-      ('window.about()', self.ui.actionAbout_Mochi_MPlayer),
-      ('playlist.next()', self.ui.actionPlay_Next_File),
-      ('playlist.prev()', self.ui.actionPlay_Previous_File),
-      ('playlist.repeat = Repeat.Off', self.ui.action_Off),
-      ('playlist.repeat = Repeat.Playlist', self.ui.action_Playlist),
-      ('playlist.repeat = Repeat.This', self.ui.action_This_File),
-      ('playlist.shuffle()', self.ui.actionSh_uffle),
-      ('playlist.show = not playlist.show', self.ui.action_Show_Playlist),
-      ('playlist.full = not playlist.full', self.ui.action_Hide_Album_Art),
-      ('update.check()', self.ui.action_Check_for_Updates),
-      ('update.youtube_dl()', self.ui.actionUpdate_Streaming_Support),
-      ('overlay.media_info = not overlay.media_info', self.ui.actionMedia_Info),
-      ('engine.new()', self.ui.action_New_Player),
-      ('qt.aboutQt()', self.ui.actionAbout_Qt),
-      ('qt.quit()', self.ui.actionE_xit),
-    ]:
-      # compile the function into python byte-code
-      f = compile(cmd, '<string>', 'single')
-      # attach the function-call to the action
-      act.triggered.connect(lambda v, f = f: self.eval(f))
+  def wheelEvent(self, event):
+    self.input.mouse.wheel(event)
+    return QMainWindow.wheelEvent(self, event)
 
+  def keyPressEvent(self, event):
+    if not (self.focusWidget() == self.ui.inputLineEdit and
+            event.key() == Qt.Key_Return):
+      self.input.key.press(event)
+    return QMainWindow.keyPressEvent(self, event)
+
+  def eventFilter(self, obj, event):
+    return QMainWindow.eventFilter(self, obj, event)
+
+  # Handle other window events
   def dragEnterEvent(self, event):
     '''
     Feedback when something is dragged into window.
@@ -154,37 +102,6 @@ class MainWindow(QMainWindow):
       event.accept()
     return QMainWindow.dropEvent(self, event)
 
-  def eventFilter(self, obj, event):
-    return QMainWindow.eventFilter(self, obj, event)
-
-  def mousePressEvent(self, event):
-    '''
-    Process window mouse events.
-    '''
-    self.input.mouse.press(event)
-    return QMainWindow.mousePressEvent(self, event)
-
-  def mouseReleaseEvent(self, event):
-    self.input.mouse.release(event)
-    return QMainWindow.mouseReleaseEvent(self, event)
-
-  def mouseMoveEvent(self, event):
-    self.input.mouse.move(event)
-    return QMainWindow.mouseMoveEvent(self, event)
-
-  def wheelEvent(self, event):
-    self.input.mouse.wheel(event)
-    return QMainWindow.wheelEvent(self, event)
-
-  def keyPressEvent(self, event):
-    '''
-    Process window key events.
-    '''
-    if not (self.focusWidget() == self.ui.inputLineEdit and
-            event.key() == Qt.Key_Return):
-      self.input.key.press(event)
-    return QMainWindow.keyPressEvent(self, event)
-
   def resizeEvent(self, event):
     '''
     Process when window is resized.
@@ -193,15 +110,7 @@ class MainWindow(QMainWindow):
       self.overlay.refresh()
     return QMainWindow.resizeEvent(self, event)
 
-  def mouseDoubleClickEvent(self, event):
-    '''
-    Processed when window is double clicked.
-    '''
-    if event.button() == Qt.LeftButton and ui.mpvFrame.geometry().contains(event.pos()):
-      self.fullscreen = not self.fullscreen
-      event.accept()
-    QMainWindow.mouseDoubleClickEvent(self, event)
-
+  # Window Functions
   def fit(self, percent=0):
     '''
     Fit window to a specific percentage of the video.

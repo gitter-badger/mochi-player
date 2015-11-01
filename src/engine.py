@@ -27,7 +27,7 @@ class Engine:
 
     self.window = MainWindow()
     self.player = Player(self.window.ui.mpvFrame.winId())
-    self.input = Input()
+    self.input = Input(self.window.ui)
     self.overlay = Overlay()
     self.playlist = Playlist()
     self.remote = Remote()
@@ -48,12 +48,14 @@ class Engine:
     self.window.config = self.config
     self.window.input = self.input
     self.window.playlist = self.playlist
-    self.window.exec_scope = self.exec_scope
+    self.window.eval = self.eval
     self.window.overlay = self.overlay
     self.window.player = self.player
     # player
     # input
-    self.input.exec_scope = self.exec_scope
+    self.input.eval = self.eval
+    self.input.key.eval = self.eval
+    self.input.mouse.eval = self.eval
     # overlay
     self.overlay.config = self.config
     # playlist
@@ -69,6 +71,12 @@ class Engine:
     res = self.qt.exec_()
     self.save(self.config.settingsFile)
     return res
+
+  def eval(self, s):
+    try:
+      exec(s, self.exec_scope)
+    except Exception as e:
+      print(e)
 
   def load(self, file):
     '''
