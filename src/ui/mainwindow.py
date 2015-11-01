@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PyQt5.Qt import QTextCursor, QKeySequence
+from PyQt5.Qt import QTextCursor, QKeySequence, QDesktopServices, QUrl
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from .moc.mainwindow import Ui_MainWindow
@@ -318,7 +318,14 @@ class MainWindow(QMainWindow):
     '''
     Show the current file in the system explorer.
     '''
-    pass
+    Util.showInFolder(self.player.path)
+
+  def boss(self):
+    '''
+    Hide from the boss (Pause/Minimize).
+    '''
+    self.player.pause = True
+    self.setWindowState(self.windowState() | Qt.WindowMinimized)
 
   def preferences(self):
     '''
@@ -330,7 +337,7 @@ class MainWindow(QMainWindow):
     '''
     Load online help.
     '''
-    pass
+    QDesktopServices.openUrl(QUrl(self.config.onlineHelpUrl))
 
   def about(self):
     '''

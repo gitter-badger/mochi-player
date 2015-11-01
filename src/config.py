@@ -8,6 +8,7 @@ class Config:
   settingsFile = 'mochi-player.ini'
   languagePath = ':/translations/'
   remoteListen = '0.0.0.0:8474'
+  onlineHelpUrl = 'http://mochi-player.github.io/help.html'
   monospaceFont = 'Courier New'
   audio_filetypes = ["*.mp3","*.ogg","*.wav","*.wma","*.m4a","*.aac","*.ac3","*.ape","*.flac","*.ra"]
   video_filetypes = ["*.avi","*.divx","*.mpg","*.mpeg","*.m1v","*.m2v","*.mpv","*.dv","*.3gp","*.mov","*.mp4","*.m4v","*.mqv","*.dat","*.vcd","*.ogm","*.ogv","*.asf","*.wmv","*.vob","*.mkv","*.ram","*.flv","*.rm","*.ts","*.rmvb","*.dvr-ms","*.m2t","*.m2ts","*.rec","*.f4v","*.hdmov","*.webm","*.vp8","*.letv","*.hlv"]

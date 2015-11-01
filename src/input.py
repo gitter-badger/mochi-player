@@ -77,7 +77,7 @@ class Input:
       ('Alt+4', 'window.fit(100)', 'Fit window to %d%%' % (100)),
       ('Alt+5', 'window.fit(150)', 'Fit window to %d%%' % (150)),
       ('Alt+6', 'window.fit(200)', 'Fit window to %d%%' % (200)),
-      ('Esc', 'window.boss()', 'Boss key'),
+      ('Esc', 'window.fullscreen(False) if window.isFullScreen() else window.boss()', 'Boss key'),
       ('Down', 'playlist.selection += 1', 'Select next file on playlist'),
       ('Up', 'playlist.selection -= 1', 'Select previous file on playlist'),
       ('Return', 'player.play(playlist.selected)', 'Play selected file on playlist'),
