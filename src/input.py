@@ -3,7 +3,7 @@ Input deals with mapping bindings (key/mouse/gesture) to actual
   functions in the engine.
 '''
 
-from PyQt5.Qt import QKeySequence
+from PyQt5.Qt import Qt, QKeySequence
 
 class Input:
   class Key:
@@ -32,8 +32,9 @@ class Input:
         act = self.input.get('MiddleClick')
       else:
         return
-      self.eval(act[0])
-      event.accept()
+      if act:
+        self.eval(act[0])
+        event.accept()
 
     def move(self, event):
       pass

@@ -9,6 +9,7 @@ from PyQt5.Qt import QApplication, QProcess
 from config import Config
 from ui.mainwindow import MainWindow
 from player import Player
+from output import Output
 from input import Input
 from overlay import Overlay
 from playlist import Playlist
@@ -25,6 +26,7 @@ class Engine:
     # initialize everything
     qt = QApplication(argv)
 
+    self.output = Output()
     self.window = MainWindow()
     self.player = Player(self.window.ui.mpvFrame.winId())
     self.input = Input(self.window.ui)
@@ -44,6 +46,8 @@ class Engine:
     self.exec_scope = {k: v for k, v in self.__dict__.items() }
 
     # connect everything
+    # output
+    self.output.written.connect(self.window.output)
     # window
     self.window.config = self.config
     self.window.input = self.input
@@ -76,7 +80,7 @@ class Engine:
     try:
       exec(s, self.exec_scope)
     except Exception as e:
-      print(e)
+      print('Error in engine.eval(%s): %s' % (s, e))
 
   def load(self, file):
     '''
@@ -86,9 +90,8 @@ class Engine:
       f = open(file, 'r')
       self.data.update(json.load(f))
       f.close()
-    except:
-      return False
-    return True
+    except Exception as e:
+      print('Error in engine.load(%s): %s' % (file, e))
 
   def save(self, file):
     '''
@@ -102,9 +105,8 @@ class Engine:
           d.pop(k)
       json.dump(d, f, indent=2, sort_keys=True)
       f.close()
-    except:
-      return False
-    return True
+    except Exception as e:
+      print('Error in engine.save(%s): %s' % (file, e))
 
   def new(self):
     '''

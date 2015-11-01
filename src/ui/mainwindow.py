@@ -46,6 +46,13 @@ class MainWindow(QMainWindow):
 
     self.show()
 
+  def output(self, text):
+    '''
+    Output text to the console textbox.
+    '''
+    self.ui.outputTextEdit.moveCursor(QTextCursor.End)
+    self.ui.outputTextEdit.insertPlainText(text)
+
   # Delegate input events to input class
   def mousePressEvent(self, event):
     self.input.mouse.press(event)
@@ -111,6 +118,12 @@ class MainWindow(QMainWindow):
     return QMainWindow.resizeEvent(self, event)
 
   # Window Functions
+  def clear(self):
+    '''
+    Clear the output window.
+    '''
+    self.ui.outputTextEdit.clear()
+
   def fit(self, percent=0):
     '''
     Fit window to a specific percentage of the video.
