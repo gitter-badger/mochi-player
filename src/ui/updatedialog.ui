@@ -33,7 +33,7 @@ QPushButton {
 	padding: 4px 6px;
 }
 QPushButton:focus {
-	border: 1px solid #008098;
+	border: 1px solid #80CBC4;
 	outline: none;
 }
 QPushButton:pressed {
@@ -52,7 +52,7 @@ QScrollBar:vertical {
 	width: 6px;
 }
 QScrollBar::handle:vertical {
-	background: #008098;
+	background: #80CBC4;
 	border-radius: 2px;
 	min-height: 10px;
 }
@@ -75,7 +75,7 @@ QScrollBar:horizontal {
 	height: 6px;
 }
 QScrollBar::handle:horizontal {
-	background: #008098;
+	background: #80CBC4;
 	border-radius: 2px;
 	min-width: 10px;
 }
