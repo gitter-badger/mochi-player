@@ -37,7 +37,7 @@ QPushButton {
 	padding: 4px 6px;
 }
 QPushButton:focus {
-	border: 1px solid #80CBC4;
+	border: 1px solid #008098;
 	outline: none;
 }
 QPushButton:pressed {
@@ -56,7 +56,7 @@ QScrollBar:vertical {
 	width: 6px;
 }
 QScrollBar::handle:vertical {
-	background: #80CBC4;
+	background: #008098;
 	border-radius: 2px;
 	min-height: 10px;
 }
@@ -79,7 +79,7 @@ QScrollBar:horizontal {
 	height: 6px;
 }
 QScrollBar::handle:horizontal {
-	background: #80CBC4;
+	background: #008098;
 	border-radius: 2px;
 	min-width: 10px;
 }
@@ -116,7 +116,7 @@ QTabBar::tab {
 	min-width: 100px;
 }
 QTabBar::tab:selected {
-	border-bottom: 1px solid #80CBC4;
+	border-bottom: 1px solid #008098;
 	font-weight: bold;
 }
 QTabBar::tab:!selected {

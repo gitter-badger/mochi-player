@@ -40,7 +40,7 @@ QMenuBar::item {
 	background: #1A1A1A;
 }
 QMenuBar::item:selected {
-	background: #80CBC4;
+	background: #008098;
 }
 
 QMenu {
@@ -48,7 +48,7 @@ QMenu {
     border: 1px solid #5A5A5A;
 }
 QMenu::item:selected {
-	background: #80CBC4;
+	background: #008098;
  }
 QMenu::item:checked {
 	/* distinguish check state for menu item's with images */
@@ -85,7 +85,7 @@ QSplitter::handle,
 	padding: 2px;
 }
 #inputLineEdit:focus {
-	border-color: #80CBC4;
+	border-color: #008098;
 }
 
 /* Playlist group */
@@ -101,7 +101,7 @@ QSplitter::handle,
 	padding: 3px 2px;
 }
 #searchBox:focus {
-	border-color: #80CBC4;
+	border-color: #008098;
 }
 
 /* time labels */
@@ -124,7 +124,7 @@ QListView {
 	padding: 3px 0px;
 }
 #playlistWidget::item:selected {
-	background: #80CBC4;
+	background: #008098;
 }
 #playlistWidget:item:selected:active,
 #playlistWidget:item:selected:!active {
@@ -138,7 +138,7 @@ QScrollBar:vertical {
 	width: 6px;
 }
 QScrollBar::handle:vertical {
-	background: #80CBC4;
+	background: #008098;
 	border-radius: 2px;
 	min-height: 10px;
 }
@@ -161,7 +161,7 @@ QScrollBar:horizontal {
 	padding-top: 1px;
 }
 QScrollBar::handle:horizontal {
-	background: #80CBC4;
+	background: #008098;
 	border-radius: 2px;
 	min-width: 10px;
 }
@@ -495,7 +495,7 @@ QSlider::sub-page:horizontal:disabled {
 }
 QSlider::handle:horizontal {
 	/* handle color */
-	background: #80CBC4;
+	background: #008098;
 	width: 9px;
 	border-radius: 4px;
 }
@@ -505,7 +505,7 @@ QSlider::groove:horizontal {
 }
 QSlider::sub-page:horizontal {
 	/* the progress color */
-	background: #80CBC4;
+	background: #008098;
 }</string>
       </property>
       <property name="maximum">
@@ -905,7 +905,7 @@ QSlider::sub-page:horizontal {
 	height: 1px;
 }
 QSlider::sub-page:horizontal {
-	background: #80CBC4;
+	background: #008098;
 }
 QSlider::handle:horizontal {
 	background: #F5F5F5;
