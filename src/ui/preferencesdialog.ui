@@ -583,8 +583,9 @@ QTableWidget::item:selected {
     min-width: 40px;
 }</string>
            </property>
-           <property name="text">
-            <string>Edit</string>
+           <property name="icon">
+            <iconset resource="../rsclist.qrc">
+             <normaloff>:/img/edit.svg</normaloff>:/img/edit.svg</iconset>
            </property>
           </widget>
          </item>
