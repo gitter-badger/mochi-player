@@ -20,7 +20,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Mochi MPlayer</string>
+   <string>Baka MPlayer</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../rsclist.qrc">
@@ -98,7 +98,7 @@ QSplitter::handle,
 	background: #353535;
 	border: 1px solid #353535;
 	font-size: 12px;
-	padding: 2px;
+	padding: 3px 2px;
 }
 #searchBox:focus {
 	border-color: #008098;
@@ -114,20 +114,20 @@ QSplitter::handle,
 	font-size: 12px;
 }
 
-/* QListView */
+/* playlistWidget */
 
 QListView {
 	outline: none;
 }
-QListView::item {
+#playlistWidget::item {
 	background: #1A1A1A;
 	padding: 3px 0px;
 }
-QListView::item:selected {
+#playlistWidget::item:selected {
 	background: #008098;
 }
-QListWidget:item:selected:active,
-QListWidget:item:selected:!active {
+#playlistWidget:item:selected:active,
+#playlistWidget:item:selected:!active {
 	color: whitesmoke;
 }
 
@@ -1225,7 +1225,7 @@ QSlider::handle:horizontal {
     <addaction name="actionUpdate_Streaming_Support"/>
     <addaction name="separator"/>
     <addaction name="actionAbout_Qt"/>
-    <addaction name="actionAbout_Mochi_MPlayer"/>
+    <addaction name="actionAbout_Baka_MPlayer"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_View"/>
@@ -1448,9 +1448,9 @@ QSlider::handle:horizontal {
     <string>About &amp;Qt</string>
    </property>
   </action>
-  <action name="actionAbout_Mochi_MPlayer">
+  <action name="actionAbout_Baka_MPlayer">
    <property name="text">
-    <string>About &amp;Mochi MPlayer</string>
+    <string>About &amp;Baka MPlayer</string>
    </property>
   </action>
   <action name="action_To_Current_Size">
