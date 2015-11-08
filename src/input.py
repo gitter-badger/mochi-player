@@ -3,7 +3,7 @@ Input deals with mapping bindings (key/mouse/gesture) to actual
   functions in the engine.
 '''
 
-from PyQt5.Qt import Qt, QKeySequence
+from PyQt5.Qt import Qt, QApplication, QCursor, QKeySequence, QElapsedTimer
 
 class Input:
   class Key:
@@ -19,42 +19,71 @@ class Input:
         event.accept()
 
   class Mouse:
+    _timer_threshold = 10
+    _gesture_threshold = 15
+
+    class GestureHandler:
+      def __init__(self, startPos):
+        self.startPos = startPos
+        self.action = None
+        self.timer = QElapsedTimer()
+        self.timer.start()
+        QApplication.setOverrideCursor(QCursor(Qt.PointingHandCursor))
+
     def __init__(self):
       self.input = {}
+      self.buttonString = {
+        Qt.LeftButton: 'Left',
+        Qt.RightButton: 'Right',
+        Qt.MiddleButton: 'Middle',
+      }
+      self.gestureHandler = {
+        Qt.LeftButton: None,
+        Qt.RightButton: None,
+        Qt.MiddleButton: None,
+      }
 
     def press(self, event):
-      button = event.button()
-      if button == Qt.LeftButton:
-        act = self.input.get('LeftClick')
-      elif button == Qt.RightButton:
-        act = self.input.get('RightClick')
-      elif button == Qt.MiddleClick:
-        act = self.input.get('MiddleClick')
-      else:
-        return
-      if act:
-        self.eval(act[0])
-        event.accept()
+      self.gestureHandler[event.button()] = Input.Mouse.GestureHandler(event.globalPos())
+      event.accept()
 
     def move(self, event):
-      pass
+      for button, handler in filter(lambda h: h[1], self.gestureHandler.items()):
+        if handler.timer.elapsed() > self._timer_threshold:
+          delta = event.globalPos() - handler.startPos
+          if handler.action == None:
+            if abs(delta.x()) >= abs(delta.y()) + self._gesture_threshold:
+              handler.action = self.input.get('%sHDrag' % (button))
+            elif abs(delta.y()) >= abs(delta.x()) + self._gesture_threshold:
+              handler.action = self.input.get('%sVDrag' % (button))
+            # todo: DDrag
+          else:
+            self.eval(action[0])(delta)
 
     def release(self, event):
-      pass
+      button = event.button()
+      handler = self.gestureHandler.get(button)
+      click = True
+      if handler:
+        click = handler.timer.elapsed() < self._timer_threshold
+        handler = None
+        QApplication.restoreOverrideCursor()
+      if click:
+        action = self.input.get('%sClick' % (self.buttonString.get(button)))
+        if act:
+          self.eval(action[0])
+          event.accept()
 
     def doubleClick(self, event):
-      act = self.input.get('DoubleClick')
-      if act:
-        self.eval(act[0])
+      action = self.input.get('%sDoubleClick' % (self.buttonString.get(self.button)))
+      if action:
+        self.eval(action[0])
         event.accept()
 
     def wheel(self, event):
       angle = event.angleDelta()
-      if angle.y() > 0:
-        act = self.input.get('WheelUp')
-      else:
-        act = self.input.get('WheelDown')
-      self.eval(act[0])
+      action = self.input.get('Wheel%s' % ('Up' if angle.y() > 0 else 'Down'))
+      self.eval(action[0])
       event.accept()
 
   def __init__(self, ui):
@@ -81,11 +110,11 @@ class Input:
       ('Ctrl+E', None, 'window.showInFolder()', 'Show the file in its folder', ui.actionShow_in_Folder),
       ('Ctrl+F', None, 'playlist.show = not playlist.show', 'Toggle playlist visibility', ui.action_Show_Playlist),
       ('Ctrl+G', None, 'window.output = not window.output', 'Access command-line', ui.actionShow_D_ebug_Output),
-      ('Ctrl+J', 'MiddleClickOpenButton', 'window.jump()', 'Show jump to time dialog', ui.action_Jump_to_Time),
+      ('Ctrl+J', None, 'window.jump()', 'Show jump to time dialog', ui.action_Jump_to_Time),
       ('Ctrl+Left', None, 'playlist.prev()', 'Play previous file', ui.actionPlay_Previous_File),
       ('Ctrl+M', None, 'player.mute = not player.mute', 'Toggle mute audio', ui.action_Mute),
       ('Ctrl+N', None, 'engine.new()', 'Open a new window', ui.action_New_Player),
-      ('Ctrl+O', 'LeftClickOpenButton', 'window.open()', 'Show open file dialog', ui.action_Open_File),
+      ('Ctrl+O', None, 'window.open()', 'Show open file dialog', ui.action_Open_File),
       ('Ctrl+Q', None, 'qt.quit()', 'Quit', ui.actionE_xit),
       ('Ctrl+R', None, 'player.time_pos = 0', 'Restart playback', ui.action_Restart),
       ('Ctrl+Right', None, 'playlist.next()', 'Play next file', ui.actionPlay_Next_File),
@@ -95,7 +124,7 @@ class Input:
       ('Ctrl+Shift+T', None, 'player.screenshot(includes="window")', 'Take screenshot without subtitles', ui.actionWithout_Subtitles),
       ('Ctrl+Shift+Up', None, 'player.speed += 0.1', 'Increase playback speed by 10', ui.action_Increase),
       ('Ctrl+T', None, 'player.screenshot(includes="subtitles")', 'Take screenshot with subtitles', ui.actionWith_Subtitles),
-      ('Ctrl+U', 'RightClickOpenButton', 'window.openUrl()', 'Show location dialog', ui.actionOpen_URL),
+      ('Ctrl+U', None, 'window.openUrl()', 'Show location dialog', ui.actionOpen_URL),
       ('Ctrl+Up', 'WheelUp', 'player.volume += 5', 'Increase volume', ui.action_Increase_Volume),
       ('Ctrl+V', None, 'player.play(qt.clipboard().text())', 'Open clipboard location', ui.actionOpen_Path_from_Clipboard),
       ('Ctrl+W', None, 'player.sub_visibility = not player.sub_visibility', 'Toggle subtitle visibility', ui.actionShow_Subtitles),
