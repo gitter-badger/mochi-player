@@ -60,6 +60,8 @@ class Engine:
     self.input.eval = self.eval
     self.input.key.eval = self.eval
     self.input.mouse.eval = self.eval
+    self.input.key.config = self.config
+    self.input.mouse.config = self.config
     # overlay
     self.overlay.config = self.config
     self.overlay.mpvFrame = self.window.ui.mpvFrame

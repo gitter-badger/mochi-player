@@ -15,7 +15,7 @@ class Config:
   mediaFiletypes = audioFiletypes + videoFiletypes
   subtitleFileypes = ['*.sub','*.srt','*.ass','*.ssa']
   help = False
-  verbose = False
+  verbose = True # todo: make False for release
   script = True # are we a python script, or a wrapped executable?
 
   def __init__(self, argv):

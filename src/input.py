@@ -10,16 +10,21 @@ class Input:
     def __init__(self):
       self.input = {}
 
+    def verbose(self, text):
+      if self.config.verbose:
+        print('[input.key]: %s' % (text))
+      return text
+
     def press(self, event):
       # get the actual input binding
-      key = self.input.get(QKeySequence(event.modifiers() | event.key()).toString())
+      key = self.input.get(self.verbose(QKeySequence(event.modifiers() | event.key()).toString()))
       if key:
         # execute the attached function
         self.eval(key[0])
         event.accept()
 
   class Mouse:
-    _timer_threshold = 10
+    _timer_threshold = 100
     _gesture_threshold = 15
 
     class GestureHandler:
@@ -43,6 +48,11 @@ class Input:
         Qt.MiddleButton: None,
       }
 
+    def verbose(self, text):
+      if self.config.verbose:
+        print('[input.mouse]: %s' % (text))
+      return text
+
     def press(self, event):
       self.gestureHandler[event.button()] = Input.Mouse.GestureHandler(event.globalPos())
       event.accept()
@@ -53,38 +63,40 @@ class Input:
           delta = event.globalPos() - handler.startPos
           if handler.action == None:
             if abs(delta.x()) >= abs(delta.y()) + self._gesture_threshold:
-              handler.action = self.input.get('%sHDrag' % (button))
+              handler.action = self.input.get(self.verbose('%sHDrag' % (self.buttonString.get(button))))
             elif abs(delta.y()) >= abs(delta.x()) + self._gesture_threshold:
-              handler.action = self.input.get('%sVDrag' % (button))
+              handler.action = self.input.get(self.verbose('%sVDrag' % (self.buttonString.get(button))))
             # todo: DDrag
           else:
             self.eval(action[0])(delta)
+        event.accept()
 
     def release(self, event):
       button = event.button()
       handler = self.gestureHandler.get(button)
       click = True
       if handler:
-        click = handler.timer.elapsed() < self._timer_threshold
-        handler = None
+        click = handler.action == None
+        self.gestureHandler[button] = None
         QApplication.restoreOverrideCursor()
       if click:
-        action = self.input.get('%sClick' % (self.buttonString.get(button)))
-        if act:
+        action = self.input.get(self.verbose('%sClick' % (self.buttonString.get(button))))
+        if action:
           self.eval(action[0])
           event.accept()
 
     def doubleClick(self, event):
-      action = self.input.get('%sDoubleClick' % (self.buttonString.get(self.button)))
+      action = self.input.get(self.verbose('%sDoubleClick' % (self.buttonString.get(event.button()))))
       if action:
         self.eval(action[0])
         event.accept()
 
     def wheel(self, event):
       angle = event.angleDelta()
-      action = self.input.get('Wheel%s' % ('Up' if angle.y() > 0 else 'Down'))
-      self.eval(action[0])
-      event.accept()
+      action = self.input.get(self.verbose('Wheel%s' % ('Up' if angle.y() > 0 else 'Down')))
+      if action:
+        self.eval(action[0])
+        event.accept()
 
   def __init__(self, ui):
     '''
