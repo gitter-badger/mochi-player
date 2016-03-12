@@ -28,8 +28,7 @@
 
 QPushButton {
 	background: #454A4D;
-	border: 1px solid #454A4D;
-	border-bottom: 1px solid black;
+	border: 1px solid #000;
 	border-radius: 2px;
 	color: whitesmoke;
 	min-width: 76px;
@@ -46,7 +45,7 @@ QPushButton:pressed {
 QPushButton:disabled {
 	background: transparent;
 	border: 1px solid #454A4D;
-	color: #B8B8B8;
+	color: #6F6F6F;
 }
 
 /* QScrollBar */
@@ -66,7 +65,7 @@ QScrollBar::sub-line:vertical {
 }
 QScrollBar::add-page:vertical,
 QScrollBar::sub-page:vertical  {
-	background: #5A5A5A;
+	background: #383838;
 	margin: 0 2px;
 }
 QScrollBar::up-arrow:vertical,
@@ -75,8 +74,8 @@ QScrollBar::down-arrow:vertical {
 }
 
 QScrollBar:horizontal {
-	padding-top: 1px;
 	height: 6px;
+	padding-top: 1px;
 }
 QScrollBar::handle:horizontal {
 	background: #008098;
@@ -89,7 +88,7 @@ QScrollBar::sub-line:horizontal {
 }
 QScrollBar::add-page:horizontal,
 QScrollBar::sub-page:horizontal {
-	background: #5A5A5A;
+	background: #383838;
 	margin: 2px 0;
 }
 QScrollBar::left-arrow:horizontal,
@@ -120,7 +119,6 @@ QTabBar::tab:selected {
 	font-weight: bold;
 }
 QTabBar::tab:!selected {
-	color: #B8B8B8;
 	font-weight: normal;
 	margin-bottom: 1px;
 }</string>
@@ -193,7 +191,7 @@ QTabBar::tab:!selected {
        <item>
         <widget class="QLabel" name="infoLabel">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Baka MPlayer&lt;/b&gt; is a free and open source, cross-platform, &lt;b&gt;libmpv&lt;/b&gt; based multimedia player. Its simple design reflects the idea for an uncluttered, simple, and enjoyable environment for watching tv shows.&lt;br&gt;&lt;br&gt;Copyright © 2015 godly-devotion, u8sand&lt;br&gt;&lt;br&gt;&lt;a href=&quot;https://github.com/u8sand/Baka-MPlayer&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:dodgerblue;&quot;&gt;https://github.com/u8sand/Baka-MPlayer&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Baka MPlayer&lt;/b&gt; is a free and open source, cross-platform, &lt;b&gt;libmpv&lt;/b&gt; based multimedia player. Its simple design reflects the idea for an uncluttered, simple, and enjoyable environment for watching tv shows.&lt;br&gt;&lt;br&gt;Copyright © 2016 godly-devotion, u8sand&lt;br&gt;&lt;br&gt;&lt;a href=&quot;https://github.com/u8sand/Baka-MPlayer&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#008098;&quot;&gt;https://github.com/u8sand/Baka-MPlayer&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -243,15 +241,19 @@ Apache License, version 2.0 &lt;Google&gt;
 Retro Cassette image
 &lt;Lukas Troup&gt;
 
+Gesture icons
+CC License &lt;Jeff Portaro&gt;
+
 Download icon
 CC BY 3.0 &lt;Sasha Mescheryakov&gt;
 
 Translations
 - Chinese &lt;amazingfate, Antares95&gt;
 - Croatian &lt;gogo&gt;
-- Dutch &lt;robin007bond&gt;
+- Dutch &lt;robin007bond, wb9688&gt;
 - French &lt;chapouvalpin&gt;
-- German: &lt;yiip87&gt;
+- Georgian &lt;arabuli&gt;
+- German &lt;yiip87&gt;
 - Italian &lt;Aloysius&gt;
 - Korean &lt;godly-devotion&gt;
 - Portuguese &lt;u8sand&gt;

@@ -1,31 +1,37 @@
+'''
+CustomSplitter - Extends QSplitter letting us, more sanely, keep track of the position from the right
+ and saving the position while it is hidden.
+'''
+
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.Qt import pyqtSignal
 from math import fsum
 
+
 class CustomSplitter(QSplitter):
-  normalPos = 0
+    normalPos = 0
 
-  positionChanged = pyqtSignal(int)
+    positionChanged = pyqtSignal(int)
 
-  def __init__(self, parent):
-    QSplitter.__init__(self, parent)
-    self.splitterMoved.connect(
-      lambda pos, index: \
-        index == 1 and \
-        self.positionChanged.emit(self.max() - pos))
+    def __init__(self, parent):
+        QSplitter.__init__(self, parent)
+        self.splitterMoved.connect(
+            lambda pos, index:
+            index == 1 and
+            self.positionChanged.emit(self.max() - pos))
 
-  def position(self):
-    return self.sizes()[1]
+    def position(self):
+        return self.sizes()[1]
 
-  def normalPosition(self):
-    return self.normalPos
+    def normalPosition(self):
+        return self.normalPos
 
-  def max(self):
-    return int(fsum(self.sizes()))
+    def max(self):
+        return int(fsum(self.sizes()))
 
-  def setPosition(self, pos):
-    self.setSizes([self.max() - pos, pos])
-    self.positionChanged.emit(pos)
+    def setPosition(self, pos):
+        self.setSizes([self.max() - pos, pos])
+        self.positionChanged.emit(pos)
 
-  def setNormalPosition(self, pos):
-    normalPos = pos
+    def setNormalPosition(self, pos):
+        normalPos = pos
