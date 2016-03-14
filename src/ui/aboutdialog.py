@@ -3,7 +3,7 @@ AboutDialog - Custom about dialog
 '''
 
 from PyQt5.QtWidgets import QDialog
-from .moc.aboutdialog import Ui_AboutDialog
+from moc.aboutdialog import Ui_AboutDialog
 
 
 class AboutDialog(QDialog):

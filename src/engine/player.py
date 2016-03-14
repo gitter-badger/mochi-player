@@ -5,12 +5,13 @@ Player provides an interface between the core video player engine
 
 import locale
 from mpv import MPV
+from .data import Data
 
 # todo: deal with before mpv is initialized with values
 
 
-class Player(MPV):
-
+class Player(MPV, Data):
+    data = ['volume']
     def __init__(self, wid):
         locale.setlocale(locale.LC_NUMERIC, 'C')  # reset locale to C for mpv
         MPV.__init__(self, wid=int(wid))

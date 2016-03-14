@@ -14,9 +14,7 @@ class Util:
         return (sys.platform == 'win32')
 
     def isValidFile(path):
-        '''
-        Check to see if this is a valid file.
-        '''
+        ''' Check to see if this is a valid file. '''
         if sys.platform == 'linux':
             return re.match(r'^^\\.{1,2}|/', path, re.IGNORECASE)
         elif sys.platform == 'win32':
@@ -24,9 +22,7 @@ class Util:
         return False
 
     def isValidLocation(path):
-        '''
-        Check to see if this is a valid location.
-        '''
+        ''' Check to see if this is a valid location. '''
         if sys.platform == 'linux':
             return re.match(r'^([a-z]{2,}://|\\.{1,2}|/)', path, re.IGNORECASE)
         elif sys.platform == 'win32':
@@ -34,9 +30,7 @@ class Util:
         return False
 
     def showInFolder(path):
-        '''
-        Show the file in file manager.
-        '''
+        ''' Show the file in file manager. '''
         if sys.platform == 'linux':
             QDesktopServices.openUrl(
                 QUrl('file:///%s' % (os.path.dirname(path))))

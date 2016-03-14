@@ -1,4 +1,4 @@
-#!/bin/python
+#!/bin/python3
 
 '''
 mochi-player - a mpv based media player

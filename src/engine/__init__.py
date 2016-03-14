@@ -3,28 +3,24 @@ Engine is the main controller of the player. It initalizes everything
   and facilitates communication between the models and views.
 '''
 
-import json
-import copy
-
 from PyQt5.Qt import QApplication, QProcess
-from config import Config
 from ui.mainwindow import MainWindow
-from player import Player
-from input import Input
-from overlay import Overlay
-from playlist import Playlist
-from translator import Translator
-from remote import Remote
-from update import Update
+from .data import Data
+from .config import Config
+from .player import Player
+from .input import Input
+from .overlay import Overlay
+from .playlist import Playlist
+from .translator import Translator
+from .remote import Remote
+from .update import Update
 
-
-class Engine:
+class Engine(Data):
+    data = ['window', 'player', 'input', 'overlay', 'playlist', 'remote', 'update', 'translator']
 
     def __init__(self, argv):
-        '''
-        Creates all components
-          argv: command-line arguments
-        '''
+        ''' Creates all components
+          argv: command-line arguments '''
         # initialize everything
         qt = QApplication(argv)
 
@@ -37,16 +33,13 @@ class Engine:
         self.update = Update()
         self.translator = Translator()
 
-        # create a data tree of all modules' members for easy load/save
-        self.data = {k: v.__dict__ for k, v in self.__dict__.items()}
+        self.save_init()
 
         # volatile initialization
-        self.engine = self
         self.config = Config(argv)
         self.qt = qt
         self.quit = qt.quit
-        self.exec_scope = {k: v for k, v in self.__dict__.items()}
-        self.window.ui.consoleWidget.pushVariables(self.exec_scope)
+        self.window.ui.consoleWidget.pushVariables(vars(self))
 
         # connect everything
         # window
@@ -59,10 +52,7 @@ class Engine:
         # player
         # input
         self.input.eval = self.eval
-        self.input.key.eval = self.eval
-        self.input.mouse.eval = self.eval
-        self.input.key.config = self.config
-        self.input.mouse.config = self.config
+        self.input.config = self.config
         # overlay
         self.overlay.config = self.config
         self.overlay.mpvFrame = self.window.ui.mpvFrame
@@ -74,53 +64,21 @@ class Engine:
             self.window.ui.retranslateUi)
 
     def exec_(self):
-        '''
-        Main program loop.
-        '''
+        ''' Main program loop. '''
         self.load(self.config.settingsFile)
         res = self.qt.exec_()
         self.save(self.config.settingsFile)
         return res
 
     def eval(self, s):
-        '''
-        Safely evaluate a python statement in the scope of the engine class.
-        '''
+        ''' Safely evaluate a python statement in the scope of the engine class. '''
         try:
             exec(s, self.exec_scope)
         except Exception as e:
             print('Error in engine.eval(%s): %s' % (s, e))
 
-    def load(self, file):
-        '''
-        Load from settings into various engine objects.
-        '''
-        try:
-            f = open(file, 'r')
-            self.data.update(json.load(f))
-            f.close()
-        except Exception as e:
-            print('Error in engine.load(%s): %s' % (file, e))
-
-    def save(self, file):
-        '''
-        Save from settings into various engine objects.
-        '''
-        try:
-            f = open(file, 'w')
-            d = copy.deepcopy(dict(self.data))
-            for k, v in self.data.items():
-                if d[k] == v:
-                    d.pop(k)
-            json.dump(d, f, indent=2, sort_keys=True)
-            f.close()
-        except Exception as e:
-            print('Error in engine.save(%s): %s' % (file, e))
-
     def new(self):
-        '''
-        Create new instance of application.
-        '''
+        ''' Create new instance of application. '''
         if self.config.script:
             # find main script filename
             import __main__

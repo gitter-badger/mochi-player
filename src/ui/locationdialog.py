@@ -4,9 +4,9 @@ LocationDialog - Open Location (accepts URLs)
 
 from PyQt5.Qt import QApplication, QPixmap, QDir
 from PyQt5.QtWidgets import QDialog
-from .moc.locationdialog import Ui_LocationDialog
+from moc.locationdialog import Ui_LocationDialog
 
-from util import Util
+from engine.util import Util
 
 
 class LocationDialog(QDialog):

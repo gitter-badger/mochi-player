@@ -4,33 +4,38 @@ Input deals with mapping bindings (key/mouse/gesture) to actual
 '''
 
 from PyQt5.Qt import Qt, QApplication, QCursor, QKeySequence, QElapsedTimer
+from .data import Data
 
 
-class Input:
+class Input(Data):
+    data = ['key', 'mouse']
 
-    class Key:
+    class Key(dict, Data):
+        data = ('data', 'input',)
 
-        def __init__(self):
-            self.input = {}
+        def __init__(self, parent):
+            dict.__init__(self)
+            self.input = parent
 
         def verbose(self, text):
-            if self.config.verbose:
+            if self.input.config.verbose:
                 # print('[input.key]: %s' % (text))
                 pass
             return text
 
         def press(self, event):
             # get the actual input binding
-            key = self.input.get(self.verbose(QKeySequence(
+            key = self.get(self.verbose(QKeySequence(
                 event.modifiers() | event.key()).toString()))
             if key:
                 # execute the attached function
-                self.eval(key[0])
+                self.input.eval(key[0])
                 event.accept()
 
-    class Mouse:
-        _timer_threshold = 100
-        _gesture_threshold = 15
+    class Mouse(dict, Data):
+        data = ('data', 'input', 'buttonString', 'gestureHandler',)
+        timer_threshold = 100
+        gesture_threshold = 15
 
         class GestureHandler:
 
@@ -41,8 +46,10 @@ class Input:
                 self.timer.start()
                 QApplication.setOverrideCursor(QCursor(Qt.PointingHandCursor))
 
-        def __init__(self):
-            self.input = {}
+        def __init__(self, parent):
+            dict.__init__(self)
+            self.input = parent
+
             self.buttonString = {
                 Qt.LeftButton: 'Left',
                 Qt.RightButton: 'Right',
@@ -55,7 +62,7 @@ class Input:
             }
 
         def verbose(self, text):
-            if self.config.verbose:
+            if self.input.config.verbose:
                 print('[input.mouse]: %s' % (text))
             return text
 
@@ -66,18 +73,18 @@ class Input:
 
         def move(self, event):
             for button, handler in filter(lambda h: h[1], self.gestureHandler.items()):
-                if handler.timer.elapsed() > self._timer_threshold:
+                if handler.timer.elapsed() > self.timer_threshold:
                     delta = event.globalPos() - handler.startPos
                     if handler.action == None:
-                        if abs(delta.x()) >= abs(delta.y()) + self._gesture_threshold:
-                            handler.action = self.input.get(self.verbose(
+                        if abs(delta.x()) >= abs(delta.y()) + self.gesture_threshold:
+                            handler.action = self.get(self.verbose(
                                 '%sHDrag' % (self.buttonString.get(button))))
-                        elif abs(delta.y()) >= abs(delta.x()) + self._gesture_threshold:
-                            handler.action = self.input.get(self.verbose(
+                        elif abs(delta.y()) >= abs(delta.x()) + self.gesture_threshold:
+                            handler.action = self.get(self.verbose(
                                 '%sVDrag' % (self.buttonString.get(button))))
                         # todo: DDrag
                     else:
-                        self.eval(action[0])(delta)
+                        self.input.eval(action[0])(delta)
                 event.accept()
 
         def release(self, event):
@@ -89,33 +96,30 @@ class Input:
                 self.gestureHandler[button] = None
                 QApplication.restoreOverrideCursor()
             if click:
-                action = self.input.get(self.verbose(
+                action = self.get(self.verbose(
                     '%sClick' % (self.buttonString.get(button))))
                 if action:
-                    self.eval(action[0])
+                    self.input.eval(action[0])
                     event.accept()
 
         def doubleClick(self, event):
-            action = self.input.get(self.verbose(
+            action = self.get(self.verbose(
                 '%sDoubleClick' % (self.buttonString.get(event.button()))))
             if action:
-                self.eval(action[0])
+                self.input.eval(action[0])
                 event.accept()
 
         def wheel(self, event):
             angle = event.angleDelta()
-            action = self.input.get(self.verbose(
+            action = self.get(self.verbose(
                 'Wheel%s' % ('Up' if angle.y() > 0 else 'Down')))
             if action:
-                self.eval(action[0])
+                self.input.eval(action[0])
                 event.accept()
 
     def __init__(self, ui):
-        '''
-        Initialize input bindings.
-        '''
-        self.key, self.mouse = Input.Key(), Input.Mouse()
-
+        ''' Initialize input bindings. '''
+        self.key, self.mouse = Input.Key(self), Input.Mouse(self)
         # todo: cleanup/organize differently
 
         # (Key Binding, Mouse Binding, Attached Function, Label, Attached Action)
@@ -227,17 +231,21 @@ class Input:
 
         for k, m, f, l, a in defaults:
             # compile the function into python byte-code
-            if f:
-                f = compile(f, '<string>', 'single')
+            # if f:
+            #     f = compile(f, '<string>', 'single')
             if k:
                 # register function in key input hash
-                self.key.input[k] = (f, l)
+                self.key[k] = (f, l)
             if m:
                 # register function in mouse input hash
-                self.mouse.input[m] = (f, l)
+                self.mouse[m] = (f, l)
             if a:
                 # attach the function-call to the action
                 a.triggered.connect(lambda v, f=f: self.eval(f))
                 if k:
                     # label action with shortcut
                     a.setShortcut(QKeySequence.fromString(k))
+
+        self.save_init()
+        self.key.save_init()
+        self.mouse.save_init()

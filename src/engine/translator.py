@@ -4,19 +4,20 @@ Translator allows us to translate text throughout the application
 '''
 
 from PyQt5.Qt import QTranslator, QLibraryInfo, QLocale, qApp
+from .data import Data
 
 
-class Translator:
+class Translator(Data):
+    data = ['lang']
     translate_callback = []
 
     def __init__(self):
-        self.lang, self.qt, self.app = None, None, None
+        self.lang = None
+        self.qt, self.app = None, None
 
     def register_translate_callback(self, callback):
-        '''
-        Components that need to reload strings should register callbacks
-          via this function to be called after translation.
-        '''
+        ''' Components that need to reload strings should register callbacks
+          via this function to be called after translation. '''
         self.translate_callback.append(callback)
 
     def translate(self, lang):

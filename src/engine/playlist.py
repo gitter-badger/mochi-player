@@ -3,6 +3,8 @@ Playlist handles the playlist, loading directories or youtube playlists
   when necessary into the player.
 '''
 
+from .data import Data
 
-class Playlist:
+
+class Playlist(Data):
     pass

@@ -4,9 +4,9 @@ JumpDialog - Jump to specific time
 
 # from PyQt5.Qt import QApplication, QPixmap, QDir
 from PyQt5.QtWidgets import QDialog
-from .moc.jumpdialog import Ui_JumpDialog
+from moc.jumpdialog import Ui_JumpDialog
 
-from util import Util
+from engine.util import Util
 
 
 class JumpDialog(QDialog):
