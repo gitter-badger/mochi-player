@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>MochiApplication.qml</file>
+        <file>MochiConfig.qml</file>
+        <file>MochiInput.qml</file>
+        <file>MochiMenu.qml</file>
+        <file>MochiPanel.qml</file>
+        <file>MochiPlayer.qml</file>
+        <file>MochiPlaylist.qml</file>
+        <file>MochiRecent.qml</file>
+        <file>MochiRemote.qml</file>
+        <file>MochiTerminal.qml</file>
+        <file>MochiTray.qml</file>
+        <file>MochiUpdate.qml</file>
+        <file>MochiWindow.qml</file>
+    </qresource>
+</RCC>
